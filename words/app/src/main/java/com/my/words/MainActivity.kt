@@ -7,6 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.my.words.ui.PlayAudio
+import com.my.words.ui.word.WordDetailPage
 
 class MainActivity : ComponentActivity() {
 
@@ -16,6 +18,11 @@ class MainActivity : ComponentActivity() {
             MainPage()
         }
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        PlayAudio.release()
+    }
 }
 
 @Composable
@@ -23,8 +30,8 @@ fun MainPage() {
     val navController= rememberNavController()
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomePage(navController) }
-        composable("detail/{name}") { it.arguments?.getString("name")
-            ?.let { it1 -> WordDetailPage(navController, it1) } }
+        composable("detail/{index}") { it.arguments?.getString("index")
+            ?.let { index -> WordDetailPage(navController, index) } }
     }
 }
 
