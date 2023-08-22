@@ -1,8 +1,5 @@
 package com.my.words.ui.word
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.CacheDiskStaticUtils
@@ -10,37 +7,52 @@ import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.my.words.beans.WordBean
 import com.my.words.beans.YouDaoWord
+import com.my.words.beans.getAudioUrl
 import com.my.words.beans.getLineInterpret
 import com.my.words.network.YouDaoRequest
 import com.my.words.ui.PlayAudio
 
-class WordViewModel(assetName: Int) : ViewModel() {
-    private val cacheKey = "${assetName}json"
+class WordViewModel : ViewModel() {
+    private var assetName:Int = 0
+    lateinit var beanList: List<WordBean>
+    fun setAssetName(assetName:Int){
+        this.assetName = assetName
+        this.beanList = getList(assetName)
+    }
+    private fun cacheKey():String{
+        return "${assetName}json"
+    }
     val interpret: MutableLiveData<String> = MutableLiveData("")
 
-    val beanList = getList(assetName)
-    val startPageIndex = CacheDiskStaticUtils.getString(cacheKey, "0").toInt()
+
+    val startPageIndex = CacheDiskStaticUtils.getString(cacheKey(), "0").toInt()
 
     private fun getList(assetName: Int): List<WordBean> {
         val json = ResourceUtils.readAssets2String("${assetName + 1}.json")
         return GsonUtils.fromJson(json, GsonUtils.getListType(WordBean::class.java))
     }
 
-    fun playAudio() {
-        PlayAudio.play()
+    fun playAudio(index: Int) {
+        PlayAudio.play(beanList[index].getAudioUrl())
     }
 
     fun initPlay(index: Int) {
-        PlayAudio.initPlayer("https://dict.youdao.com/dictvoice?audio=${beanList[index].name}")
+        PlayAudio.initPlayer(beanList[index].getAudioUrl())
     }
 
     fun cachePage(index: Int) {
-        CacheDiskStaticUtils.put(cacheKey, "$index")
+        CacheDiskStaticUtils.put(cacheKey(), "$index")
     }
 
     fun getYouDaoWordBean(index: Int) {
+        if (beanList[index].youDaoWord != null) {
+            getLineInterpret(index = index, youDaoWord = beanList[index].youDaoWord?.data)
+            return
+        }
+
         YouDaoRequest().suggest(beanList[index].name,
             {
+                beanList[index].youDaoWord = it
                 getLineInterpret(index = index, youDaoWord = it?.data)
             }
         ) {
@@ -55,7 +67,7 @@ class WordViewModel(assetName: Int) : ViewModel() {
         } else {
             beanList[index].getLineInterpret()
         }
-        interpret.value = string
+        interpret.postValue(string)
     }
 
 }

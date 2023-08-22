@@ -1,4 +1,5 @@
 package com.my.words.ui.word
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -25,7 +26,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -38,17 +38,16 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
-import com.my.words.beans.getLineInterpret
 import com.my.words.ui.theme.WordsTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalPagerApi::class)
 @Composable
-fun WordDetailPage(navController: NavHostController, index: String) {
+fun WordDetailPage(
+    vm: WordViewModel = viewModel()
+) {
     val coroutineScope = rememberCoroutineScope()
-
-    val vm = WordViewModel(index.toInt())
 
     val pagerState = rememberPagerState(
         //总页数
@@ -67,6 +66,7 @@ fun WordDetailPage(navController: NavHostController, index: String) {
             vm.initPlay(currentIndex)
             vm.getYouDaoWordBean(currentIndex)
         }
+
     }
 
     HorizontalPager(
@@ -137,7 +137,7 @@ private fun WordView(vm: WordViewModel, page: Int, pageChangeClick: PageChangeCl
                 painter = painterResource(id = R.mipmap.icon_play_1),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
-                    vm.playAudio()
+                    vm.playAudio(page)
                 }
             )
 
