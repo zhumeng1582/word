@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.my.words.ui.PlayAudio
+import com.my.words.ui.main.HomePage
+import com.my.words.ui.select.SelectWordBookPage
 import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordViewModel
 
@@ -32,6 +34,7 @@ fun MainPage() {
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "home") {
         composable("home") { HomePage(navController) }
+        composable("selectWord") { SelectWordBookPage(navController) }
         composable("detail/{index}") {
             it.arguments?.getString("index")
                 ?.let { index ->

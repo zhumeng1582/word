@@ -19,7 +19,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -33,7 +32,6 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
@@ -45,26 +43,26 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WordDetailPage(
-    vm: WordViewModel = viewModel()
+    viewModel: WordViewModel = viewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(
         //总页数
-        pageCount = vm.beanList.size,
+        pageCount = viewModel.beanList.size,
         //预加载的个数
         initialOffscreenLimit = 1,
         //是否无限循环
         infiniteLoop = false,
         //初始页面
-        initialPage = vm.startPageIndex
+        initialPage = viewModel.startPageIndex
     )
     val currentIndex = pagerState.currentPage
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
-            vm.cachePage(currentIndex)
-            vm.initPlay(currentIndex)
-            vm.getYouDaoWordBean(currentIndex)
+            viewModel.cachePage(currentIndex)
+            viewModel.initPlay(currentIndex)
+            viewModel.getYouDaoWordBean(currentIndex)
         }
 
     }
@@ -81,7 +79,7 @@ fun WordDetailPage(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background
             ) {
-                WordView(vm, page, object : PageChangeClick {
+                WordView(page, object : PageChangeClick {
                     override fun pre() {
                         coroutineScope.launch {
                             if (currentIndex > 1) {
@@ -92,7 +90,7 @@ fun WordDetailPage(
 
                     override fun next() {
                         coroutineScope.launch {
-                            if (currentIndex < vm.beanList.size + 1) {
+                            if (currentIndex < viewModel.beanList.size + 1) {
                                 pagerState.scrollToPage(currentIndex + 1)
 
                             }
@@ -107,10 +105,10 @@ fun WordDetailPage(
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun WordView(vm: WordViewModel, page: Int, pageChangeClick: PageChangeClick) {
-    val interpret = vm.interpret.observeAsState()
+private fun WordView(page: Int, pageChangeClick: PageChangeClick, viewModel: WordViewModel = viewModel()) {
+    val interpret = viewModel.interpret.observeAsState()
 
-    val bean = vm.beanList[page]
+    val bean = viewModel.beanList[page]
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
@@ -137,7 +135,7 @@ private fun WordView(vm: WordViewModel, page: Int, pageChangeClick: PageChangeCl
                 painter = painterResource(id = R.mipmap.icon_play_1),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
-                    vm.playAudio(page)
+                    viewModel.playAudio(page)
                 }
             )
 

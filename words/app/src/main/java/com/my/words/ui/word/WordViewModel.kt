@@ -2,7 +2,6 @@ package com.my.words.ui.word
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.blankj.utilcode.util.CacheDiskStaticUtils
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.my.words.beans.WordBean
@@ -11,21 +10,27 @@ import com.my.words.beans.getAudioUrl
 import com.my.words.beans.getLineInterpret
 import com.my.words.network.YouDaoRequest
 import com.my.words.ui.PlayAudio
+import com.my.words.util.CacheUtil
+import kotlin.properties.Delegates
 
 class WordViewModel : ViewModel() {
-    private var assetName:Int = 0
+    private var assetName: Int = 0
     lateinit var beanList: List<WordBean>
-    fun setAssetName(assetName:Int){
+    var startPageIndex by Delegates.notNull<Int>()
+
+    fun setAssetName(assetName: Int) {
         this.assetName = assetName
         this.beanList = getList(assetName)
+        this.startPageIndex = CacheUtil.getStartIndex(cacheKey())
     }
-    private fun cacheKey():String{
+
+    private fun cacheKey(): String {
         return "${assetName}json"
     }
+
     val interpret: MutableLiveData<String> = MutableLiveData("")
 
 
-    val startPageIndex = CacheDiskStaticUtils.getString(cacheKey(), "0").toInt()
 
     private fun getList(assetName: Int): List<WordBean> {
         val json = ResourceUtils.readAssets2String("${assetName + 1}.json")
@@ -41,7 +46,7 @@ class WordViewModel : ViewModel() {
     }
 
     fun cachePage(index: Int) {
-        CacheDiskStaticUtils.put(cacheKey(), "$index")
+        CacheUtil.setStartIndex(cacheKey(), index)
     }
 
     fun getYouDaoWordBean(index: Int) {
