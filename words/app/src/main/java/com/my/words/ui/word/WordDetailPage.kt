@@ -37,6 +37,7 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
 import com.my.words.ui.theme.WordsTheme
+import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
@@ -111,6 +112,7 @@ private fun WordView(page: Int, pageChangeClick: PageChangeClick, viewModel: Wor
     val bean = viewModel.beanList[page]
 
     Column(modifier = Modifier.fillMaxWidth()) {
+        TopBarView("",{})
         Text(
             text = "当前单词：$page",
             modifier = Modifier

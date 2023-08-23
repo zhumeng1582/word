@@ -19,6 +19,7 @@ import androidx.navigation.NavHostController
 import com.my.words.Config
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
+import com.my.words.widget.TopBarView
 
 @Composable
 fun SelectWordBookPage(
@@ -32,6 +33,7 @@ fun SelectWordBookPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
+                TopBarView("",{})
                 Config.classList.forEach { name ->
                     Greeting(
                         navController, name, Modifier

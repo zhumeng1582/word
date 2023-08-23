@@ -22,6 +22,8 @@ import com.my.words.Config
 import com.my.words.ui.select.SelectWordViewModel
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
+import com.my.words.widget.HomeTopBarView
+import com.my.words.widget.TopBarView
 
 @Composable
 fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = viewModel()) {
@@ -35,6 +37,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
+                HomeTopBarView("背单词")
                 SelectWord(
                     navController, Modifier
                         .width(150.dp)
