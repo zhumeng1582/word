@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">背单词</string>
     <string name="icon_play">播放</string>
+    <string name="home">学词</string>
+    <string name="category">单词本</string>
+    <string name="collection">词汇量</string>
+    <string name="profile">我</string>
 </resources>

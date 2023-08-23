@@ -23,6 +23,7 @@ import com.my.words.ui.select.SelectWordViewModel
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
 import com.my.words.widget.HomeTopBarView
+import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
 
 @Composable
@@ -88,7 +89,8 @@ fun WordDetail(
     val interpret = viewModel.selectWord.observeAsState()
 
     val index = Config.classList.indexOf(interpret.value)
-    Button(onClick = { navController.navigate("detail/$index") }, modifier = modifier) {
+
+    Button(onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) }, modifier = modifier) {
         Text(text = "背单词")
     }
 }
