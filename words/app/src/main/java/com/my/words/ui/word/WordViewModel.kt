@@ -20,20 +20,19 @@ class WordViewModel : ViewModel() {
 
     fun setAssetName(assetName: Int) {
         this.assetName = assetName
-        this.beanList = getList(assetName)
+        this.beanList = getList()
         this.startPageIndex = CacheUtil.getStartIndex(cacheKey())
     }
 
     private fun cacheKey(): String {
-        return "${assetName}json"
+        return "${assetName}.json"
     }
 
     val interpret: MutableLiveData<String> = MutableLiveData("")
 
 
-
-    private fun getList(assetName: Int): List<WordBean> {
-        val json = ResourceUtils.readAssets2String("${assetName + 1}.json")
+    private fun getList(): List<WordBean> {
+        val json = ResourceUtils.readAssets2String(cacheKey())
         return GsonUtils.fromJson(json, GsonUtils.getListType(WordBean::class.java))
     }
 
