@@ -39,7 +39,7 @@ fun AppScaffold() {
             }
         }
     ) {
-        NavHost(navController = navController, startDestination = "home") {
+        NavHost(navController = navController, startDestination = RouteName.HOME) {
             composable(RouteName.HOME) { HomePage(navController) }
             composable(RouteName.CATEGORY) { SelectWordBookPage(navController) }
             composable(RouteName.COLLECTION) { HomePage(navController) }
@@ -50,7 +50,7 @@ fun AppScaffold() {
                     ?.let { index ->
                         val vm: WordViewModel = viewModel()
                         vm.setAssetName(index.toInt())
-                        WordDetailPage()
+                        WordDetailPage(navController)
                     }
             }
         }

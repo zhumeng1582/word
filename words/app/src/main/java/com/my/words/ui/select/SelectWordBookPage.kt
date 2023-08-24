@@ -17,8 +17,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.my.words.Config
+import com.my.words.ui.main.SelectWord
+import com.my.words.ui.main.WordDetail
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
+import com.my.words.widget.HomeTopBarView
 import com.my.words.widget.TopBarView
 
 @Composable
@@ -27,7 +30,6 @@ fun SelectWordBookPage(
 ) {
 
     WordsTheme {
-        // A surface container using the 'background' color from the theme
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -45,6 +47,7 @@ fun SelectWordBookPage(
             }
         }
     }
+
 
 }
 

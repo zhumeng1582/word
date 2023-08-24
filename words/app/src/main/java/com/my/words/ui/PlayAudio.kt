@@ -1,8 +1,11 @@
 package com.my.words.ui
 
+import android.app.Activity
 import android.media.MediaPlayer
 import android.util.Log
+import com.my.words.App
 import java.io.IOException
+
 
 /**
  * 用来播放在线音频
@@ -19,8 +22,11 @@ object PlayAudio {
         return null
     }
 
-    fun initPlayer(audioUrl: String) {
+    fun initPlayer(activity: Activity, audioUrl: String) {
         Log.d(TAG, "initPlayer:$audioUrl")
+        val proxy = App.getProxy(activity)
+//        proxy.registerCacheListener(this, audioUrl)
+        val proxyUrl = proxy.getProxyUrl(audioUrl)
 
         var mediaPlayer = getMediaPlayer(audioUrl)
         if (mediaPlayer == null) {
@@ -33,7 +39,7 @@ object PlayAudio {
 
         try {
             Log.d(TAG, "setDataSource")
-            mediaPlayer.setDataSource(audioUrl)
+            mediaPlayer.setDataSource(proxyUrl)
             mediaPlayer.prepareAsync()
         } catch (e: IOException) {
             e.printStackTrace()

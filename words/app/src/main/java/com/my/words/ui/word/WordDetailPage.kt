@@ -1,7 +1,15 @@
 package com.my.words.ui.word
+
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.graphics.drawable.Animatable
+import android.widget.ImageView
+import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
+import androidx.compose.animation.graphics.res.animatedVectorResource
+import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
+import androidx.compose.animation.graphics.vector.AnimatedImageVector
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,6 +19,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -18,11 +28,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -32,11 +47,18 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.drawable.DrawableCompat
+import androidx.navigation.NavHostController
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
+import com.my.words.ui.main.SelectWord
+import com.my.words.ui.main.WordDetail
 import com.my.words.ui.theme.WordsTheme
+import com.my.words.widget.HomeTopBarView
 import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -44,9 +66,11 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WordDetailPage(
+    navController: NavHostController,
     viewModel: WordViewModel = viewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
+    val activity = LocalContext.current as Activity
 
     val pagerState = rememberPagerState(
         //总页数
@@ -62,57 +86,67 @@ fun WordDetailPage(
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
             viewModel.cachePage(currentIndex)
-            viewModel.initPlay(currentIndex)
+            viewModel.initPlay(activity, currentIndex)
             viewModel.getYouDaoWordBean(currentIndex)
         }
 
     }
+    WordsTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            Column(modifier = Modifier.fillMaxSize()) {
+                TopBarView("背单词") {
+                    navController.popBackStack()
+                }
+                HorizontalPager(
+                    state = pagerState,
+                    modifier = Modifier
+                        .fillMaxSize(),
+                ) { page ->
 
-    HorizontalPager(
-        state = pagerState,
-        modifier = Modifier
-            .fillMaxSize(),
-    ) { page ->
-
-        WordsTheme {
-            // A surface container using the 'background' color from the theme
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                WordView(page, object : PageChangeClick {
-                    override fun pre() {
-                        coroutineScope.launch {
-                            if (currentIndex > 1) {
-                                pagerState.scrollToPage(currentIndex - 1)
+                    WordView(page, object : PageChangeClick {
+                        override fun pre() {
+                            coroutineScope.launch {
+                                if (currentIndex > 1) {
+                                    pagerState.scrollToPage(currentIndex - 1)
+                                }
                             }
                         }
-                    }
 
-                    override fun next() {
-                        coroutineScope.launch {
-                            if (currentIndex < viewModel.beanList.size + 1) {
-                                pagerState.scrollToPage(currentIndex + 1)
+                        override fun next() {
+                            coroutineScope.launch {
+                                if (currentIndex < viewModel.beanList.size + 1) {
+                                    pagerState.scrollToPage(currentIndex + 1)
 
+                                }
                             }
                         }
-                    }
 
-                })
+                    })
+                }
             }
         }
     }
+
+
 }
 
+@OptIn(ExperimentalAnimationGraphicsApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-private fun WordView(page: Int, pageChangeClick: PageChangeClick, viewModel: WordViewModel = viewModel()) {
+private fun WordView(
+    page: Int,
+    pageChangeClick: PageChangeClick,
+    viewModel: WordViewModel = viewModel()
+) {
     val interpret = viewModel.interpret.observeAsState()
+    val playIcon = viewModel.playIcon.observeAsState()
 
     val bean = viewModel.beanList[page]
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        TopBarView("",{})
         Text(
             text = "当前单词：$page",
             modifier = Modifier
@@ -133,8 +167,9 @@ private fun WordView(page: Int, pageChangeClick: PageChangeClick, viewModel: Wor
                 color = Color.Blue,
                 modifier = Modifier.padding(end = 10.dp)
             )
+
             Image(
-                painter = painterResource(id = R.mipmap.icon_play_1),
+                painter = painterResource(id = playIcon.value!!),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
                     viewModel.playAudio(page)

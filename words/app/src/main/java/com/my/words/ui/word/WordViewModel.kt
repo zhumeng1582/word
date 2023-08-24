@@ -1,9 +1,13 @@
 package com.my.words.ui.word
 
+import android.app.Activity
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
+import com.blankj.utilcode.util.ThreadUtils
+import com.my.words.R
 import com.my.words.beans.WordBean
 import com.my.words.beans.YouDaoWord
 import com.my.words.beans.getAudioUrl
@@ -11,6 +15,8 @@ import com.my.words.beans.getLineInterpret
 import com.my.words.network.YouDaoRequest
 import com.my.words.ui.PlayAudio
 import com.my.words.util.CacheUtil
+import com.my.words.util.ThreadUtilsEx
+import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WordViewModel : ViewModel() {
@@ -29,19 +35,41 @@ class WordViewModel : ViewModel() {
     }
 
     val interpret: MutableLiveData<String> = MutableLiveData("")
+    val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
 
 
     private fun getList(): List<WordBean> {
+        timer()
         val json = ResourceUtils.readAssets2String(cacheKey())
         return GsonUtils.fromJson(json, GsonUtils.getListType(WordBean::class.java))
+    }
+
+    private fun timer() {
+        val task: ThreadUtils.SimpleTask<Int> = object : ThreadUtils.SimpleTask<Int>() {
+            override fun doInBackground(): Int {
+                return 0
+            }
+
+            override fun onSuccess(result: Int) {
+                val nextIcon = when (playIcon.value) {
+                    R.mipmap.icon_play_1 -> R.mipmap.icon_play_4
+                    R.mipmap.icon_play_2 -> R.mipmap.icon_play_1
+                    R.mipmap.icon_play_3 -> R.mipmap.icon_play_2
+                    R.mipmap.icon_play_4 -> R.mipmap.icon_play_3
+                    else -> R.mipmap.icon_play_1
+                }
+                playIcon.postValue(nextIcon)
+            }
+        }
+        ThreadUtils.executeByCachedAtFixRate(task, 800, TimeUnit.MILLISECONDS)
     }
 
     fun playAudio(index: Int) {
         PlayAudio.play(beanList[index].getAudioUrl())
     }
 
-    fun initPlay(index: Int) {
-        PlayAudio.initPlayer(beanList[index].getAudioUrl())
+    fun initPlay(activity: Activity,index: Int) {
+        PlayAudio.initPlayer(activity,beanList[index].getAudioUrl())
     }
 
     fun cachePage(index: Int) {

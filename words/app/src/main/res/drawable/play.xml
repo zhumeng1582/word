@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- 开启状态 -->
+    <item
+        android:id="@+id/state_on"
+        android:state_selected="true"
+        android:drawable="@mipmap/icon_play_1"/>
+
+    <!-- 关闭状态 -->
+    <item
+        android:id="@+id/state_off"
+        android:state_selected="false"
+        android:drawable="@mipmap/icon_play_1"/>
+
+    <!-- 开启切换到关闭的动画 -->
+    <transition
+        android:fromId="@id/state_on"
+        android:toId="@id/state_off">
+        <animation-list>
+            <item
+                android:drawable="@mipmap/icon_play_1"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_2"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_3"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_4"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_1"
+                android:duration="30"/>
+        </animation-list>
+    </transition>
+
+    <!-- 关闭切换到开启的动画 -->
+    <transition
+        android:fromId="@id/state_off"
+        android:toId="@id/state_on">
+        <animation-list>
+            <item
+                android:drawable="@mipmap/icon_play_1"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_2"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_3"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_4"
+                android:duration="30"/>
+            <item
+                android:drawable="@mipmap/icon_play_1"
+                android:duration="30"/>
+        </animation-list>
+    </transition>
+</animated-selector>
