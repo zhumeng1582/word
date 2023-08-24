@@ -38,7 +38,7 @@ class WordViewModel : ViewModel() {
         return "${assetName}.json"
     }
 
-    val interpret: MutableLiveData<String> = MutableLiveData("")
+//    val interpret: MutableLiveData<String> = MutableLiveData("")
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
 
     private fun getList(): List<WordBean> {
@@ -89,30 +89,30 @@ class WordViewModel : ViewModel() {
         CacheUtil.setStartIndex(cacheKey(), index)
     }
 
-    fun getYouDaoWordBean(index: Int) {
-        if (beanList[index].youDaoWord != null) {
-            getLineInterpret(index = index, youDaoWord = beanList[index].youDaoWord?.data)
-            return
-        }
+//    fun getYouDaoWordBean(index: Int) {
+//        if (beanList[index].youDaoWord != null) {
+//            getLineInterpret(index = index, youDaoWord = beanList[index].youDaoWord?.data)
+//            return
+//        }
+//
+//        YouDaoRequest().suggest(beanList[index].name,
+//            {
+//                beanList[index].youDaoWord = it
+//                getLineInterpret(index = index, youDaoWord = it?.data)
+//            }
+//        ) {
+//            interpret.value = beanList[index].getLineInterpret()
+//        }
+//    }
 
-        YouDaoRequest().suggest(beanList[index].name,
-            {
-                beanList[index].youDaoWord = it
-                getLineInterpret(index = index, youDaoWord = it?.data)
-            }
-        ) {
-            interpret.value = beanList[index].getLineInterpret()
-        }
-    }
-
-    private fun getLineInterpret(index: Int, youDaoWord: YouDaoWord.DataDTO?) {
-        val string = if (youDaoWord?.query == beanList[index].name) {
-            youDaoWord.entries?.filter { it.explain != null && it.explain != "" }
-                ?.joinToString("\n") { it.explain }
-        } else {
-            beanList[index].getLineInterpret()
-        }
-        interpret.postValue(string)
-    }
+//    private fun getLineInterpret(index: Int, youDaoWord: YouDaoWord.DataDTO?) {
+//        val string = if (youDaoWord?.query == beanList[index].name) {
+//            youDaoWord.entries?.filter { it.explain != null && it.explain != "" }
+//                ?.joinToString("\n") { it.explain }
+//        } else {
+//            beanList[index].getLineInterpret()
+//        }
+//        interpret.postValue(string)
+//    }
 
 }

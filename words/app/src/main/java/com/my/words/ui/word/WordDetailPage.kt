@@ -55,6 +55,8 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
+import com.my.words.beans.getExample
+import com.my.words.beans.getLineInterpret
 import com.my.words.ui.main.SelectWord
 import com.my.words.ui.main.WordDetail
 import com.my.words.ui.theme.WordsTheme
@@ -70,7 +72,6 @@ fun WordDetailPage(
     viewModel: WordViewModel = viewModel()
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val activity = LocalContext.current as Activity
 
     val pagerState = rememberPagerState(
         //总页数
@@ -87,7 +88,7 @@ fun WordDetailPage(
         launch(Dispatchers.IO) {
             viewModel.cachePage(currentIndex)
             viewModel.playAudio(currentIndex)
-            viewModel.getYouDaoWordBean(currentIndex)
+//            viewModel.getYouDaoWordBean(currentIndex)
         }
 
     }
@@ -136,17 +137,16 @@ fun WordDetailPage(
 private fun WordView(
     page: Int,
     pageChangeClick: PageChangeClick,
-    viewModel: WordViewModel = viewModel(),
-    activity: Activity = LocalContext.current as Activity
+    viewModel: WordViewModel = viewModel()
 ) {
-    val interpret = viewModel.interpret.observeAsState()
+//    val interpret = viewModel.interpret.observeAsState()
     val playIcon = viewModel.playIcon.observeAsState()
 
     val bean = viewModel.beanList[page]
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Text(
-            text = "当前单词：$page",
+            text = "当前位置：$page",
             modifier = Modifier
                 .align(alignment = Alignment.End)
                 .padding(20.dp)
@@ -184,10 +184,25 @@ private fun WordView(
         )
 
         Text(
-            text = interpret.value ?: "", fontSize = 12.sp,
+            text =bean.getLineInterpret(), fontSize = 12.sp,
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
                 .padding(20.dp),
+            style = LocalTextStyle.current.merge(
+                TextStyle(
+                    lineHeight = 1.5.em,
+                    lineHeightStyle = LineHeightStyle(
+                        alignment = LineHeightStyle.Alignment.Center,
+                        trim = LineHeightStyle.Trim.None
+                    )
+                )
+            )
+        )
+        Text(
+            text =bean.getExample(), fontSize = 12.sp,
+            modifier = Modifier
+                .align(alignment = Alignment.Start)
+                .padding(start = 20.dp, end = 20.dp),
             style = LocalTextStyle.current.merge(
                 TextStyle(
                     lineHeight = 1.5.em,
