@@ -86,7 +86,7 @@ fun WordDetailPage(
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
             viewModel.cachePage(currentIndex)
-            viewModel.initPlay(activity, currentIndex)
+            viewModel.playAudio(activity, currentIndex)
             viewModel.getYouDaoWordBean(currentIndex)
         }
 
@@ -129,17 +129,15 @@ fun WordDetailPage(
             }
         }
     }
-
-
 }
 
-@OptIn(ExperimentalAnimationGraphicsApi::class)
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun WordView(
     page: Int,
     pageChangeClick: PageChangeClick,
-    viewModel: WordViewModel = viewModel()
+    viewModel: WordViewModel = viewModel(),
+    activity: Activity = LocalContext.current as Activity
 ) {
     val interpret = viewModel.interpret.observeAsState()
     val playIcon = viewModel.playIcon.observeAsState()
@@ -172,7 +170,7 @@ private fun WordView(
                 painter = painterResource(id = playIcon.value!!),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
-                    viewModel.playAudio(page)
+                    viewModel.playAudio(activity,page)
                 }
             )
 

@@ -1,12 +1,14 @@
 package com.my.words.ui.word
 
 import android.app.Activity
+import android.util.Log
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.my.words.App
 import com.my.words.R
 import com.my.words.beans.WordBean
 import com.my.words.beans.YouDaoWord
@@ -14,6 +16,7 @@ import com.my.words.beans.getAudioUrl
 import com.my.words.beans.getLineInterpret
 import com.my.words.network.YouDaoRequest
 import com.my.words.ui.PlayAudio
+import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
 import com.my.words.util.ThreadUtilsEx
 import java.util.concurrent.TimeUnit
@@ -23,6 +26,7 @@ class WordViewModel : ViewModel() {
     private var assetName: Int = 0
     lateinit var beanList: List<WordBean>
     var startPageIndex by Delegates.notNull<Int>()
+    var isPlaying = false
 
     fun setAssetName(assetName: Int) {
         this.assetName = assetName
@@ -37,7 +41,6 @@ class WordViewModel : ViewModel() {
     val interpret: MutableLiveData<String> = MutableLiveData("")
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
 
-
     private fun getList(): List<WordBean> {
         timer()
         val json = ResourceUtils.readAssets2String(cacheKey())
@@ -51,27 +54,37 @@ class WordViewModel : ViewModel() {
             }
 
             override fun onSuccess(result: Int) {
-                val nextIcon = when (playIcon.value) {
-                    R.mipmap.icon_play_1 -> R.mipmap.icon_play_4
-                    R.mipmap.icon_play_2 -> R.mipmap.icon_play_1
-                    R.mipmap.icon_play_3 -> R.mipmap.icon_play_2
-                    R.mipmap.icon_play_4 -> R.mipmap.icon_play_3
-                    else -> R.mipmap.icon_play_1
+                if (isPlaying) {
+                    val nextIcon = when (playIcon.value) {
+                        R.mipmap.icon_play_1 -> R.mipmap.icon_play_4
+                        R.mipmap.icon_play_2 -> R.mipmap.icon_play_1
+                        R.mipmap.icon_play_3 -> R.mipmap.icon_play_2
+                        R.mipmap.icon_play_4 -> R.mipmap.icon_play_3
+                        else -> R.mipmap.icon_play_1
+                    }
+                    playIcon.postValue(nextIcon)
                 }
-                playIcon.postValue(nextIcon)
+
             }
         }
         ThreadUtils.executeByCachedAtFixRate(task, 800, TimeUnit.MILLISECONDS)
     }
 
-    fun playAudio(index: Int) {
-        PlayAudio.play(beanList[index].getAudioUrl())
-    }
+    fun playAudio(activity: Activity,index: Int) {
+        val proxy = App.getProxy(activity)
+        val proxyUrl = proxy.getProxyUrl(beanList[index].getAudioUrl())
+        PlayAudio.play(proxyUrl,object :PlayListener{
+            override fun play() {
+                isPlaying = true
+            }
 
-    fun initPlay(activity: Activity,index: Int) {
-        PlayAudio.initPlayer(activity,beanList[index].getAudioUrl())
-    }
+            override fun end() {
+                isPlaying = false
+                playIcon.postValue(R.mipmap.icon_play_1)
+            }
 
+        })
+    }
     fun cachePage(index: Int) {
         CacheUtil.setStartIndex(cacheKey(), index)
     }

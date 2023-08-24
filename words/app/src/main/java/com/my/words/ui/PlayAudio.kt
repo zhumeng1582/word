@@ -13,33 +13,13 @@ import java.io.IOException
 object PlayAudio {
     private val TAG = "PlayOnlineAudio"
     private var prepared = false
-    private var mediaPlayerMap: HashMap<String, MediaPlayer> = HashMap()
+    private var mediaPlayer = MediaPlayer()
 
-    private fun getMediaPlayer(audioUrl: String): MediaPlayer? {
-        if (mediaPlayerMap.contains(audioUrl)) {
-            return mediaPlayerMap[audioUrl]!!
-        }
-        return null
-    }
-
-    fun initPlayer(activity: Activity, audioUrl: String) {
-        Log.d(TAG, "initPlayer:$audioUrl")
-        val proxy = App.getProxy(activity)
-//        proxy.registerCacheListener(this, audioUrl)
-        val proxyUrl = proxy.getProxyUrl(audioUrl)
-
-        var mediaPlayer = getMediaPlayer(audioUrl)
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer()
-            mediaPlayerMap[audioUrl] = mediaPlayer
-        } else {
-            play(audioUrl)
-            return
-        }
-
+    fun play(audioUrl: String,playListener:PlayListener) {
         try {
+            mediaPlayer.reset()
             Log.d(TAG, "setDataSource")
-            mediaPlayer.setDataSource(proxyUrl)
+            mediaPlayer.setDataSource(audioUrl)
             mediaPlayer.prepareAsync()
         } catch (e: IOException) {
             e.printStackTrace()
@@ -48,49 +28,49 @@ object PlayAudio {
         mediaPlayer.setOnPreparedListener {
             Log.d(TAG, "onPrepared")
             prepared = true
-            play(audioUrl)
+            play()
+            playListener.play()
         }
         mediaPlayer.setOnCompletionListener {
             Log.d(TAG, "onCompletion: play sound.")
+            playListener.end()
         }
         mediaPlayer.setOnErrorListener { _, i, i1 ->
+            playListener.end()
             Log.d(TAG, "Play online sound onError: $i, $i1")
             true
         }
     }
 
-    fun play(audioUrl: String) {
+    private fun play() {
         try {
-            val mediaPlayer = getMediaPlayer(audioUrl)
-            mediaPlayer?.start()
+            mediaPlayer.start()
         } catch (e: Exception) {
             Log.e(TAG, "Play error: ", e)
         }
     }
 
     fun pause(audioUrl: String) {
-        val mediaPlayer = getMediaPlayer(audioUrl)
-        if (mediaPlayer?.isPlaying == true) {
+        if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
         }
     }
 
     fun stop(audioUrl: String) {
-        val mediaPlayer = getMediaPlayer(audioUrl)
-        mediaPlayer?.stop()
+        mediaPlayer.stop()
         prepared = false
-        mediaPlayer?.prepareAsync()
+        mediaPlayer.prepareAsync()
     }
 
     fun release(audioUrl: String) {
-        val mediaPlayer = getMediaPlayer(audioUrl)
-        mediaPlayer?.release()
+        mediaPlayer.release()
     }
 
     fun release() {
-        for (mutableEntry in mediaPlayerMap) {
-            mutableEntry.value.release()
-        }
-        mediaPlayerMap.clear()
+        mediaPlayer.release()
     }
+}
+interface PlayListener{
+    fun play()
+    fun end()
 }
