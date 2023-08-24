@@ -86,7 +86,7 @@ fun WordDetailPage(
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
             viewModel.cachePage(currentIndex)
-            viewModel.playAudio(activity, currentIndex)
+            viewModel.playAudio(currentIndex)
             viewModel.getYouDaoWordBean(currentIndex)
         }
 
@@ -170,7 +170,7 @@ private fun WordView(
                 painter = painterResource(id = playIcon.value!!),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
-                    viewModel.playAudio(activity,page)
+                    viewModel.playAudio(page)
                 }
             )
 

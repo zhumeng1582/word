@@ -70,8 +70,8 @@ class WordViewModel : ViewModel() {
         ThreadUtils.executeByCachedAtFixRate(task, 800, TimeUnit.MILLISECONDS)
     }
 
-    fun playAudio(activity: Activity,index: Int) {
-        val proxy = App.getProxy(activity)
+    fun playAudio(index: Int) {
+        val proxy = App.getProxy()
         val proxyUrl = proxy.getProxyUrl(beanList[index].getAudioUrl())
         PlayAudio.play(proxyUrl,object :PlayListener{
             override fun play() {
