@@ -5,7 +5,6 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -20,7 +19,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 fun BottomNavBarView(navCtrl: NavHostController) {
     val bottomNavList = listOf(
         BottomNavRoute.Home,
-        BottomNavRoute.Category,
+        BottomNavRoute.Book,
         BottomNavRoute.Collection,
         BottomNavRoute.Profile
     )

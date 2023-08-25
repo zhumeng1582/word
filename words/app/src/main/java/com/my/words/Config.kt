@@ -7,6 +7,7 @@ import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.my.words.beans.WordBean
 import com.my.words.database.SQLDatabase
+import com.my.words.util.CacheUtil
 import com.my.words.util.ThreadUtilsEx
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -28,6 +29,11 @@ object Config {
         "第十一级",
         "第十二级"
     )
+
+    fun getBookIndex(): Int {
+        val bookName = CacheUtil.getWordBookName()
+        return classList.indexOf(bookName)
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun loadData(application: Application): SQLDatabase {

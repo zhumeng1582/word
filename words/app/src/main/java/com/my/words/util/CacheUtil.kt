@@ -3,7 +3,7 @@ package com.my.words.util
 object CacheUtil {
     const val WordBookName = "WordBookName"
     fun getWordBookName(): String {
-        return MMKVManager.getString(WordBookName, "第一级")!!
+        return MMKVManager.getString(WordBookName, "第一级")
     }
 
     fun setWordBookName(wordBookName: String) {

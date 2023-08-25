@@ -5,13 +5,17 @@ import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.GsonUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.blankj.utilcode.util.TimeUtils
 import com.my.words.App
 import com.my.words.R
+import com.my.words.beans.LearnRecord
 import com.my.words.beans.WordBean
+import com.my.words.beans.addRecord
 import com.my.words.beans.getAudioUrl
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
@@ -22,14 +26,13 @@ class WordViewModel : ViewModel() {
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
 
-    var startPageIndex = 0
     var isPlaying = false
 
+    @OptIn(DelicateCoroutinesApi::class)
     fun setAssetName(assetName: Int) {
         GlobalScope.launch {
             this@WordViewModel.assetName = assetName
-            this@WordViewModel.beanList.postValue(App.getDb().word().query(assetName))
-            this@WordViewModel.startPageIndex = CacheUtil.getStartIndex(cacheKey())
+            this@WordViewModel.beanList.postValue(App.getDb().word().queryAllNotRemember(assetName))
         }
         timer()
 
@@ -62,6 +65,12 @@ class WordViewModel : ViewModel() {
         }
         ThreadUtils.executeByCachedAtFixRate(task, 800, TimeUnit.MILLISECONDS)
     }
+    fun addLearnRecord(index: Int){
+        val id = beanList.value?.get(index)?.id
+        id?.let {
+            addRecord(LearnRecord(0,wordId = id,TimeUtils.getNowMills()))
+        }
+    }
 
     fun playAudio(index: Int) {
         val proxy = App.getProxy()
@@ -82,6 +91,7 @@ class WordViewModel : ViewModel() {
     fun cachePage(index: Int) {
         CacheUtil.setStartIndex(cacheKey(), index)
     }
+
 
 //    fun getYouDaoWordBean(index: Int) {
 //        if (beanList[index].youDaoWord != null) {

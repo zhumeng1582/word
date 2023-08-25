@@ -2,6 +2,9 @@ package com.my.words.beans
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.my.words.App
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @Entity
 data class WordBean(
@@ -13,9 +16,35 @@ data class WordBean(
     val sound: String,
     val interpret: String,
     val example: String,
-    val isRemember: Boolean,
-    val errorCount: Int = 0,
+    var isRemember: Boolean = false,
+    var errorCount: Int = 0,
 )
+
+fun WordBean.remember() {
+    this.isRemember = true
+    update(this)
+}
+
+fun WordBean.notRemember() {
+    this.isRemember = false
+    update(this)
+}
+
+fun WordBean.errorCountAdd() {
+    this.errorCount = this.errorCount + 1
+    update(this)
+}
+
+fun WordBean.errorCountClear() {
+    this.errorCount = 0
+    update(this)
+}
+
+fun update(bean: WordBean) {
+    GlobalScope.launch {
+        App.getDb().word().update(bean)
+    }
+}
 
 fun WordBean.getLineInterpret(): String {
 

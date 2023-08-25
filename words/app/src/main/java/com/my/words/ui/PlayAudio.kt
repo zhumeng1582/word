@@ -1,9 +1,7 @@
 package com.my.words.ui
 
-import android.app.Activity
 import android.media.MediaPlayer
 import android.util.Log
-import com.my.words.App
 import java.io.IOException
 
 

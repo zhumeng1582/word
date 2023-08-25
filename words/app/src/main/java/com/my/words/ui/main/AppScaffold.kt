@@ -13,13 +13,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.my.words.ui.books.BooksPage
+import com.my.words.ui.books.WordListPage
+import com.my.words.ui.books.WordListViewModel
 import com.my.words.ui.select.SelectWordBookPage
 import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -36,7 +37,7 @@ fun AppScaffold() {
         bottomBar = {
             when (currentDestination?.route) {
                 RouteName.HOME -> BottomNavBarView(navCtrl = navController)
-                RouteName.CATEGORY -> BottomNavBarView(navCtrl = navController)
+                RouteName.BOOK -> BottomNavBarView(navCtrl = navController)
                 RouteName.COLLECTION -> BottomNavBarView(navCtrl = navController)
                 RouteName.PROFILE -> BottomNavBarView(navCtrl = navController)
             }
@@ -44,7 +45,7 @@ fun AppScaffold() {
     ) {
         NavHost(navController = navController, startDestination = RouteName.HOME) {
             composable(RouteName.HOME) { HomePage(navController) }
-            composable(RouteName.CATEGORY) { SelectWordBookPage(navController) }
+            composable(RouteName.BOOK) { BooksPage(navController) }
             composable(RouteName.COLLECTION) { HomePage(navController) }
             composable(RouteName.PROFILE) { SelectWordBookPage(navController) }
             composable(RouteName.SELECT_WORD) { SelectWordBookPage(navController) }
@@ -54,6 +55,14 @@ fun AppScaffold() {
                         val vm: WordViewModel = viewModel()
                         vm.setAssetName(index.toInt())
                         WordDetailPage(navController)
+                    }
+            }
+            composable(RouteName.WordListPage) {
+                it.arguments?.getString("type")
+                    ?.let { type ->
+                        val vm: WordListViewModel = viewModel()
+                        vm.setListType(type)
+                        WordListPage(navController)
                     }
             }
         }

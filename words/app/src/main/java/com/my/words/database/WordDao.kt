@@ -11,21 +11,28 @@ import com.my.words.beans.WordBean
 interface WordDao {
     @Query("select count(*) from WordBean")
     fun querySize(): Long
+
     @Query("select * from WordBean")
     fun queryAll(): List<WordBean>
+
     @Query("select * from WordBean where level = :level")
     fun query(level: Int): List<WordBean>
 
-    @Insert
-    fun insert(vararg book: WordBean): List<Long>
+    @Query("select * from WordBean where level = :level and isRemember = false limit 20")
+    fun queryAllNotRemember(level: Int): List<WordBean>
+    @Query("select * from WordBean where isRemember = true")
+    fun queryAllRemember(): List<WordBean>
 
     @Insert
-    fun insert(wordList: List<WordBean>): List<Long>
+    fun insert(vararg wordBean: WordBean): List<Long>
+
+    @Insert
+    fun insert(wordBeanList: List<WordBean>): List<Long>
 
     @Delete
-    fun delete(book: WordBean): Int
+    fun delete(wordBean: WordBean): Int
 
     @Update
-    fun update(book: WordBean): Int
+    fun update(wordBean: WordBean): Int
 
 }
