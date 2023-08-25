@@ -9,5 +9,6 @@ class DemoItem(scrapy.Item):
     name = scrapy.Field()
     phonetic = scrapy.Field()
     interpret = scrapy.Field()
+    example = scrapy.Field()
     sound = scrapy.Field()
     pass

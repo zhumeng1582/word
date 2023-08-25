@@ -25,7 +25,7 @@ class Demo(scrapy.Spider):
             demo['name'] = worldName
             demo['phonetic'] = mes_links.xpath('td[4]/div/span/text()').extract()[0]
             demo['interpret'] = mes_links.xpath('td[6]/div/span/text()').extract()[0]
-            c = worldName[0:1]
-            demo['sound'] = 'http://sound.yywz123.com/qsbdcword/'+c+'/'+worldName+'.mp3'
+            demo['example'] = mes_links.xpath('td[7]/a/@title').extract()[0]
+            demo['sound'] = "https://dict.youdao.com/dictvoice?audio="+worldName
             yield demo
     
