@@ -2,10 +2,8 @@ package com.my.words.ui.main
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
@@ -24,7 +22,6 @@ import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
 import com.my.words.widget.HomeTopBarView
 import com.my.words.widget.RouteName
-import com.my.words.widget.TopBarView
 
 @Composable
 fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = viewModel()) {
@@ -32,18 +29,18 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
         ?.observe(navController.currentBackStackEntry!!) { value ->
             viewModel.setSelectWord(value)
         }
+    val interpret = viewModel.selectWord.observeAsState()
+
     WordsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                HomeTopBarView("背单词")
-                SelectWord(
-                    navController, Modifier
-                        .width(150.dp)
-                        .align(alignment = Alignment.CenterHorizontally)
-                )
+                HomeTopBarView(interpret.value!!){
+                    navController.navigate("selectWord")
+                }
+
                 WordDetail(
                     navController, Modifier
                         .width(150.dp)
@@ -54,31 +51,6 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
     }
 }
 
-@Composable
-fun SelectWord(
-    navController: NavHostController,
-    modifier: Modifier = Modifier,
-    viewModel: SelectWordViewModel = viewModel()
-) {
-    val interpret = viewModel.selectWord.observeAsState()
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 80.dp),
-        horizontalArrangement = Arrangement.Center,//设置水平居中对齐
-        verticalAlignment = Alignment.CenterVertically
-    ) {//设置垂直居中对齐
-        Text(
-            text = interpret.value!!,
-            modifier = Modifier.padding(end = 10.dp)
-        )
-        Button(onClick = { navController.navigate("selectWord") }, modifier = modifier) {
-            Text(text = "换书")
-        }
-
-    }
-}
 
 @Composable
 fun WordDetail(
@@ -90,7 +62,10 @@ fun WordDetail(
 
     val index = Config.classList.indexOf(interpret.value)
 
-    Button(onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) }, modifier = modifier) {
+    Button(
+        onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) },
+        modifier = modifier
+    ) {
         Text(text = "背单词")
     }
 }

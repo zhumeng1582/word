@@ -28,7 +28,9 @@ fun BooksPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                HomeTopBarView("单词本")
+                HomeTopBarView("单词本"){
+
+                }
                 Button(
                     onClick = {
                         navController.navigate(RouteName.WordListPage_S.format("ALL"))

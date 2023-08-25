@@ -17,6 +17,7 @@ import com.my.words.ui.books.BooksPage
 import com.my.words.ui.books.WordListPage
 import com.my.words.ui.books.WordListViewModel
 import com.my.words.ui.select.SelectWordBookPage
+import com.my.words.ui.webview.WebViewPage
 import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
@@ -46,7 +47,7 @@ fun AppScaffold() {
         NavHost(navController = navController, startDestination = RouteName.HOME) {
             composable(RouteName.HOME) { HomePage(navController) }
             composable(RouteName.BOOK) { BooksPage(navController) }
-            composable(RouteName.COLLECTION) { HomePage(navController) }
+            composable(RouteName.COLLECTION) { WebViewPage(navController, url = "https://web.shanbay.com/bdc/vocabtest#/") }
             composable(RouteName.PROFILE) { SelectWordBookPage(navController) }
             composable(RouteName.SELECT_WORD) { SelectWordBookPage(navController) }
             composable(RouteName.DETAIL) {
