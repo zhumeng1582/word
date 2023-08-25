@@ -16,17 +16,12 @@ data class WordBean(
     val sound: String,
     val interpret: String,
     val example: String,
-    var isRemember: Boolean = false,
+    var isDone: Boolean = false,
     var errorCount: Int = 0,
 )
 
-fun WordBean.remember() {
-    this.isRemember = true
-    update(this)
-}
-
-fun WordBean.notRemember() {
-    this.isRemember = false
+fun WordBean.setDown(isDone:Boolean) {
+    this.isDone = isDone
     update(this)
 }
 

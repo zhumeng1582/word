@@ -40,10 +40,11 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
 import com.my.words.beans.WordBean
+import com.my.words.beans.addRecord
+import com.my.words.beans.errorCountAdd
 import com.my.words.beans.getExample
 import com.my.words.beans.getLineInterpret
-import com.my.words.beans.notRemember
-import com.my.words.beans.remember
+import com.my.words.beans.setDown
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
@@ -112,12 +113,13 @@ fun WordDetailPage(
                         }
 
                         override fun remember(bean: WordBean) {
-                            bean.remember()
+                            bean.setDown(true)
                             ToastUtils.showLong("已标记为认识")
                         }
 
                         override fun notRemember(bean: WordBean) {
-                            bean.notRemember()
+                            bean.setDown(false)
+                            bean.errorCountAdd()
                             ToastUtils.showLong("已标记为不认识")
                         }
 

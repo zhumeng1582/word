@@ -2,8 +2,6 @@ package com.my.words.ui.word
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.blankj.utilcode.util.GsonUtils
-import com.blankj.utilcode.util.ResourceUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.my.words.App
@@ -18,8 +16,8 @@ import com.my.words.util.CacheUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
-import kotlin.properties.Delegates
 
 class WordViewModel : ViewModel() {
     private var assetName: Int = 0
@@ -32,7 +30,7 @@ class WordViewModel : ViewModel() {
     fun setAssetName(assetName: Int) {
         GlobalScope.launch {
             this@WordViewModel.assetName = assetName
-            this@WordViewModel.beanList.postValue(App.getDb().word().queryAllNotRemember(assetName))
+            this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDownLimit20(assetName))
         }
         timer()
 
@@ -68,7 +66,8 @@ class WordViewModel : ViewModel() {
     fun addLearnRecord(index: Int){
         val id = beanList.value?.get(index)?.id
         id?.let {
-            addRecord(LearnRecord(0,wordId = id,TimeUtils.getNowMills()))
+            val time = TimeUtils.getNowMills()
+            addRecord(LearnRecord(wordId = id,TimeUtils.getNowMills()-(time + TimeZone.getDefault().rawOffset) % (24 * 60 * 60 * 1000)))
         }
     }
 

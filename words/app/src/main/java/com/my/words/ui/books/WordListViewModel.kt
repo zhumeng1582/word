@@ -33,11 +33,11 @@ class WordListViewModel : ViewModel() {
             }
 
             "ERROR" -> {
-                App.getDb().word().queryAllNotRemember(Config.getBookIndex())
+                App.getDb().word().queryAllError()
             }
 
             "DONE" -> {
-                App.getDb().word().queryAllRemember()
+                App.getDb().word().queryAllDone()
             }
 
             else -> {

@@ -9,6 +9,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
 @Entity(
+    primaryKeys = ["wordId", "time"],
     foreignKeys = [ForeignKey(
         entity = WordBean::class,
         childColumns = ["wordId"], // tab_teacher的列名
@@ -16,14 +17,16 @@ import kotlinx.coroutines.launch
     )], indices = [Index("wordId")]
 )
 data class LearnRecord(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int,
     val wordId: Int,
     val time: Long,
 )
 
 fun addRecord(bean: LearnRecord) {
     GlobalScope.launch {
-        App.getDb().record().insert(bean)
+        if (App.getDb().record().exit(bean.wordId, bean.time) == 0L) {
+            App.getDb().record().insert(bean)
+        } else {
+            App.getDb().record().update(bean)
+        }
     }
 }

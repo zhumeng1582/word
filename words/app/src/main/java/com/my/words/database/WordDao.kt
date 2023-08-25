@@ -18,10 +18,12 @@ interface WordDao {
     @Query("select * from WordBean where level = :level")
     fun query(level: Int): List<WordBean>
 
-    @Query("select * from WordBean where level = :level and isRemember = false limit 20")
-    fun queryAllNotRemember(level: Int): List<WordBean>
-    @Query("select * from WordBean where isRemember = true")
-    fun queryAllRemember(): List<WordBean>
+    @Query("select * from WordBean where level = :level and isDone = false limit 20")
+    fun queryNotDownLimit20(level: Int): List<WordBean>
+    @Query("select * from WordBean where errorCount > 0")
+    fun queryAllError(): List<WordBean>
+    @Query("select * from WordBean where isDone = true")
+    fun queryAllDone(): List<WordBean>
 
     @Insert
     fun insert(vararg wordBean: WordBean): List<Long>

@@ -14,6 +14,12 @@ interface LearnRecordDao {
     fun queryAll(): List<WordBean>
 
     @Insert
-    fun insert(vararg wordBean: LearnRecord): List<Long>
+    fun insert(vararg record: LearnRecord): List<Long>
+
+    @Update
+    fun update(record: LearnRecord): Int
+
+    @Query("SELECT count(*) from LearnRecord where LearnRecord.wordId = :wordId and LearnRecord.time = :time")
+    fun exit(wordId: Int, time: Long): Long
 
 }
