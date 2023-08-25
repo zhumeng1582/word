@@ -14,8 +14,11 @@ object PlayAudio {
     private val TAG = "PlayOnlineAudio"
     private var prepared = false
     private var mediaPlayer = MediaPlayer()
+    private var MaxCount = 2
+    private var count = 0
 
-    fun play(audioUrl: String,playListener:PlayListener) {
+    fun play(audioUrl: String, playListener: PlayListener) {
+        count = 0
         try {
             mediaPlayer.reset()
             Log.d(TAG, "setDataSource")
@@ -32,6 +35,9 @@ object PlayAudio {
             playListener.play()
         }
         mediaPlayer.setOnCompletionListener {
+            if (count < MaxCount) {
+                play()
+            }
             Log.d(TAG, "onCompletion: play sound.")
             playListener.end()
         }
@@ -44,6 +50,7 @@ object PlayAudio {
 
     private fun play() {
         try {
+            count++
             mediaPlayer.start()
         } catch (e: Exception) {
             Log.e(TAG, "Play error: ", e)
@@ -70,7 +77,8 @@ object PlayAudio {
         mediaPlayer.release()
     }
 }
-interface PlayListener{
+
+interface PlayListener {
     fun play()
     fun end()
 }

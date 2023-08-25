@@ -26,6 +26,13 @@ public class ThreadUtilsEx {
         new Thread(runnable).start();//启动线程
     }
 
+    public static void executeThreadDelay(Runnable runnable, int delay) {
+        runOnUiThreadDelayed(() -> {
+            new Thread(runnable).start();//启动线程
+        }, delay);
+
+    }
+
     public static void runOnUiThreadDelayed(Runnable runnable, int delay) {
         ThreadUtils.runOnUiThreadDelayed(runnable, delay);
     }

@@ -7,10 +7,10 @@ class MMKVManager private constructor() {
     private val mmkv: MMKV = MMKV.defaultMMKV()
 
     companion object {
-        private var instance: MMKVManager = MMKVManager()
+        private val instance by lazy { MMKVManager() }
 
         @JvmStatic
-        fun init(application: Application?) {
+        fun init(application: Application) {
             MMKV.initialize(application)
         }
 
@@ -21,12 +21,15 @@ class MMKVManager private constructor() {
         fun getString(key: String, defValue: String): String {
             return mmkv().getString(key, defValue) ?: ""
         }
+
         fun getInt(key: String, defValue: Int): Int {
             return mmkv().getInt(key, defValue)
         }
+
         fun putString(key: String, defValue: String) {
             mmkv().putString(key, defValue)
         }
+
         fun putInt(key: String, defValue: Int) {
             mmkv().putInt(key, defValue)
         }

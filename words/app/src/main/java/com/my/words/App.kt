@@ -1,29 +1,41 @@
-package com.my.words;
+package com.my.words
 
-import android.app.Application;
+import android.app.Application
+import android.util.Log
+import androidx.room.Room
+import com.blankj.utilcode.util.GsonUtils
+import com.blankj.utilcode.util.ResourceUtils
+import com.blankj.utilcode.util.Utils
+import com.danikula.videocache.HttpProxyCacheServer
+import com.my.words.beans.WordBean
+import com.my.words.database.SQLDatabase
+import com.my.words.util.MMKVManager.Companion.init
+import com.my.words.util.ThreadUtilsEx
 
-import com.blankj.utilcode.util.Utils;
-import com.danikula.videocache.HttpProxyCacheServer;
-import com.my.words.util.MMKVManager;
+class App : Application() {
+    private var proxy: HttpProxyCacheServer? = null
+    lateinit var db: SQLDatabase
 
-public class App extends Application {
-
-    private HttpProxyCacheServer proxy;
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        MMKVManager.init(this);
+    override fun onCreate() {
+        super.onCreate()
+        init(this)
+        db = Config.loadData(this)
     }
 
-    public static HttpProxyCacheServer getProxy() {
-        App app = (App) Utils.getApp();
-        return app.proxy == null ? (app.proxy = app.newProxy()) : app.proxy;
+    private fun newProxy(): HttpProxyCacheServer {
+        return HttpProxyCacheServer.Builder(this)
+            .maxCacheFilesCount(20)
+            .build()
     }
 
-    private HttpProxyCacheServer newProxy() {
-        return new HttpProxyCacheServer.Builder(this)
-                .maxCacheFilesCount(20)
-                .build();
+    companion object {
+        fun getDb():SQLDatabase{
+            val app = Utils.getApp() as App
+            return app.db
+        }
+        fun getProxy(): HttpProxyCacheServer {
+            val app = Utils.getApp() as App
+            return if (app.proxy == null) app.newProxy().also { app.proxy = it } else app.proxy!!
+        }
     }
 }

@@ -72,11 +72,13 @@ fun WordDetailPage(
     navController: NavHostController,
     viewModel: WordViewModel = viewModel()
 ) {
+    val beanList = viewModel.beanList.observeAsState()
+
     val coroutineScope = rememberCoroutineScope()
 
     val pagerState = rememberPagerState(
         //总页数
-        pageCount = viewModel.beanList.size,
+        pageCount = beanList.value?.size ?: 0,
         //预加载的个数
         initialOffscreenLimit = 1,
         //是否无限循环
@@ -99,7 +101,7 @@ fun WordDetailPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                TopBarView("背单词") {
+                TopBarView("背单词:$currentIndex/${pagerState.pageCount}") {
                     navController.popBackStack()
                 }
                 HorizontalPager(
@@ -119,7 +121,7 @@ fun WordDetailPage(
 
                         override fun next() {
                             coroutineScope.launch {
-                                if (currentIndex < viewModel.beanList.size + 1) {
+                                if (currentIndex < viewModel.beanList.value!!.size + 1) {
                                     pagerState.scrollToPage(currentIndex + 1)
                                 }
                             }
@@ -150,19 +152,13 @@ private fun WordView(
 //    val interpret = viewModel.interpret.observeAsState()
     val playIcon = viewModel.playIcon.observeAsState()
 
-    val bean = viewModel.beanList[page]
+    val bean = viewModel.beanList.value!![page]
 
     Column(modifier = Modifier.fillMaxWidth()) {
-        Text(
-            text = "当前位置：$page",
-            modifier = Modifier
-                .align(alignment = Alignment.End)
-                .padding(20.dp)
-        )
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 80.dp),
+                .padding(top = 40.dp),
             horizontalArrangement = Arrangement.Center,//设置水平居中对齐
             verticalAlignment = Alignment.CenterVertically
         ) {//设置垂直居中对齐
@@ -192,7 +188,7 @@ private fun WordView(
         )
 
         Text(
-            text =bean.getLineInterpret(), fontSize = 12.sp,
+            text = bean.getLineInterpret(), fontSize = 12.sp,
             modifier = Modifier
                 .align(alignment = Alignment.CenterHorizontally)
                 .padding(20.dp),
@@ -207,7 +203,7 @@ private fun WordView(
             )
         )
         Text(
-            text =bean.getExample(), fontSize = 12.sp,
+            text = bean.getExample(), fontSize = 12.sp,
             modifier = Modifier
                 .align(alignment = Alignment.Start)
                 .padding(start = 20.dp, end = 20.dp),

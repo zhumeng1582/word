@@ -18,6 +18,9 @@ import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun AppScaffold() {

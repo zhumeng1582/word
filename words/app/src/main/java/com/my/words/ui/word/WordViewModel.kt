@@ -12,33 +12,33 @@ import com.my.words.beans.getAudioUrl
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 
 class WordViewModel : ViewModel() {
     private var assetName: Int = 0
-    lateinit var beanList: List<WordBean>
-    var startPageIndex by Delegates.notNull<Int>()
+    val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
+    val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
+
+    var startPageIndex = 0
     var isPlaying = false
 
     fun setAssetName(assetName: Int) {
-        this.assetName = assetName
-        this.beanList = getList()
-        this.startPageIndex = CacheUtil.getStartIndex(cacheKey())
+        GlobalScope.launch {
+            this@WordViewModel.assetName = assetName
+            this@WordViewModel.beanList.postValue(App.getDb().word().query(assetName))
+            this@WordViewModel.startPageIndex = CacheUtil.getStartIndex(cacheKey())
+        }
+        timer()
+
     }
 
     private fun cacheKey(): String {
         return "${assetName}.json"
     }
 
-//    val interpret: MutableLiveData<String> = MutableLiveData("")
-    val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
-
-    private fun getList(): List<WordBean> {
-        timer()
-        val json = ResourceUtils.readAssets2String(cacheKey())
-        return GsonUtils.fromJson(json, GsonUtils.getListType(WordBean::class.java))
-    }
 
     private fun timer() {
         val task: ThreadUtils.SimpleTask<Int> = object : ThreadUtils.SimpleTask<Int>() {
@@ -65,8 +65,8 @@ class WordViewModel : ViewModel() {
 
     fun playAudio(index: Int) {
         val proxy = App.getProxy()
-        val proxyUrl = proxy.getProxyUrl(beanList[index].getAudioUrl())
-        PlayAudio.play(proxyUrl,object :PlayListener{
+        val proxyUrl = proxy.getProxyUrl(beanList.value?.get(index)?.getAudioUrl() ?: "")
+        PlayAudio.play(proxyUrl, object : PlayListener {
             override fun play() {
                 isPlaying = true
             }
@@ -78,6 +78,7 @@ class WordViewModel : ViewModel() {
 
         })
     }
+
     fun cachePage(index: Int) {
         CacheUtil.setStartIndex(cacheKey(), index)
     }

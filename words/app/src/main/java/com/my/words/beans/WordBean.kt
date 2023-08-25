@@ -1,12 +1,20 @@
 package com.my.words.beans
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity
 data class WordBean(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int,
     val name: String,
+    var level: Int = 0,
     val phonetic: String,
     val sound: String,
     val interpret: String,
     val example: String,
-    var youDaoWord: YouDaoWord?
+    val isRemember: Boolean,
+    val errorCount: Int = 0,
 )
 
 fun WordBean.getLineInterpret(): String {
@@ -22,21 +30,23 @@ fun WordBean.getLineInterpret(): String {
         .replace("；vt.", "；\nvt.")
         .replace("；vi.", "；\nvi.")
 }
-fun WordBean.getExample():String{
-    val ret:MutableList<String> = arrayListOf()
+
+fun WordBean.getExample(): String {
+    val ret: MutableList<String> = arrayListOf()
 
     val list = example.split("||||").toMutableList()
     list.removeAt(0)
     list.forEach {
         val index = findChineseIndex(it)
-        ret.add(it.substring(0,index))
-        ret.add(it.substring(index,it.length))
+        ret.add(it.substring(0, index))
+        ret.add(it.substring(index, it.length))
     }
     return ret.joinToString("\n")
 }
-fun findChineseIndex( text:String):Int{
+
+fun findChineseIndex(text: String): Int {
     return text.indexOfFirst {
-        it.code >126
+        it.code > 126
     }
 }
 
