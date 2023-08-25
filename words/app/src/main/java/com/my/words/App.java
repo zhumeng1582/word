@@ -4,10 +4,17 @@ import android.app.Application;
 
 import com.blankj.utilcode.util.Utils;
 import com.danikula.videocache.HttpProxyCacheServer;
+import com.my.words.util.MMKVManager;
 
 public class App extends Application {
 
     private HttpProxyCacheServer proxy;
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        MMKVManager.init(this);
+    }
 
     public static HttpProxyCacheServer getProxy() {
         App app = (App) Utils.getApp();

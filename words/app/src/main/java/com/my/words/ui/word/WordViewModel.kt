@@ -1,8 +1,5 @@
 package com.my.words.ui.word
 
-import android.app.Activity
-import android.util.Log
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.GsonUtils
@@ -11,14 +8,10 @@ import com.blankj.utilcode.util.ThreadUtils
 import com.my.words.App
 import com.my.words.R
 import com.my.words.beans.WordBean
-import com.my.words.beans.YouDaoWord
 import com.my.words.beans.getAudioUrl
-import com.my.words.beans.getLineInterpret
-import com.my.words.network.YouDaoRequest
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
-import com.my.words.util.ThreadUtilsEx
 import java.util.concurrent.TimeUnit
 import kotlin.properties.Delegates
 

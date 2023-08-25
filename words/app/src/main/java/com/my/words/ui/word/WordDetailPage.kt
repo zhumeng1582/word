@@ -55,6 +55,7 @@ import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
+import com.my.words.beans.WordBean
 import com.my.words.beans.getExample
 import com.my.words.beans.getLineInterpret
 import com.my.words.ui.main.SelectWord
@@ -120,9 +121,16 @@ fun WordDetailPage(
                             coroutineScope.launch {
                                 if (currentIndex < viewModel.beanList.size + 1) {
                                     pagerState.scrollToPage(currentIndex + 1)
-
                                 }
                             }
+                        }
+
+                        override fun remember(bean: WordBean) {
+
+                        }
+
+                        override fun notRemember(bean: WordBean) {
+
                         }
 
                     })
@@ -221,11 +229,11 @@ private fun WordView(
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Button(onClick = {
-                pageChangeClick.pre()
-            }) { Text("上一个") }
+                pageChangeClick.remember(bean)
+            }) { Text("认识") }
             Button(onClick = {
-                pageChangeClick.next()
-            }) { Text("下一个") }
+                pageChangeClick.notRemember(bean)
+            }) { Text("不认识") }
         }
     }
 }
@@ -233,4 +241,6 @@ private fun WordView(
 interface PageChangeClick {
     fun pre()
     fun next()
+    fun remember(bean: WordBean)
+    fun notRemember(bean: WordBean)
 }
