@@ -38,8 +38,6 @@ fun BottomNavBarView(navCtrl: NavHostController) {
                 label = { Text(text = stringResource(screen.stringId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.routeName } == true,
                 onClick = {
-                    println("BottomNavView当前路由 ===> ${currentDestination?.hierarchy?.toList()}")
-                    println("当前路由栈 ===> ${navCtrl.graph.nodes}")
                     if (currentDestination?.route != screen.routeName) {
                         navCtrl.navigate(screen.routeName) {
                             popUpTo(navCtrl.graph.findStartDestination().id) {
