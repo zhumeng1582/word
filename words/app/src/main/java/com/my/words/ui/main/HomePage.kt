@@ -1,7 +1,7 @@
 package com.my.words.ui.main
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -29,6 +29,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
         ?.observe(navController.currentBackStackEntry!!) { value ->
             viewModel.setSelectWord(value)
         }
+    viewModel.getData()
     val interpret = viewModel.selectWord.observeAsState()
 
     WordsTheme {
@@ -37,7 +38,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                HomeTopBarView(interpret.value!!){
+                HomeTopBarView(interpret.value!!) {
                     navController.navigate("selectWord")
                 }
 
@@ -59,13 +60,33 @@ fun WordDetail(
     viewModel: SelectWordViewModel = viewModel()
 ) {
     val interpret = viewModel.selectWord.observeAsState()
+    val accumulateAccount = viewModel.accumulateAccount.observeAsState()
+    val accumulateLearntAccount = viewModel.accumulateLearntAccount.observeAsState()
+    val maxContinueAccount = viewModel.maxContinueAccount.observeAsState()
 
     val index = Config.classList.indexOf(interpret.value)
-
-    Button(
-        onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) },
-        modifier = modifier
-    ) {
-        Text(text = "背单词")
+    Column(modifier = modifier) {
+        Button(
+            onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) },
+        ) {
+            Text(text = "背单词")
+        }
+        Button(
+            onClick = { },
+        ) {
+            Text(text = "累计打卡:${accumulateAccount.value}天")
+        }
+        Button(
+            onClick = { },
+        ) {
+            Text(text = "连续打卡:${maxContinueAccount.value}天")
+        }
+        Button(
+            onClick = { },
+        ) {
+            Text(text = "累计学习:${accumulateLearntAccount.value}个单词")
+        }
     }
+
+
 }

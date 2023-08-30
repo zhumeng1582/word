@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.my.words.App
+import com.my.words.Config
 import com.my.words.R
 import com.my.words.beans.LearnRecord
 import com.my.words.beans.WordBean
@@ -13,6 +14,7 @@ import com.my.words.beans.getAudioUrl
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
+import com.my.words.util.TimerUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -20,26 +22,51 @@ import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class WordViewModel : ViewModel() {
-    private var assetName: Int = 0
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
 
     var isPlaying = false
+    var typeTitle = "背单词"
 
     @OptIn(DelicateCoroutinesApi::class)
     fun setAssetName(assetName: Int) {
         GlobalScope.launch {
-            this@WordViewModel.assetName = assetName
             this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDownLimit20(assetName))
         }
         timer()
-
+    }
+    @OptIn(DelicateCoroutinesApi::class)
+    fun setList(type: String) {
+        GlobalScope.launch {
+            this@WordViewModel.beanList.postValue(getList(type))
+        }
     }
 
-    private fun cacheKey(): String {
-        return "${assetName}.json"
-    }
+    private fun getList(type: String): List<WordBean> {
+        this.typeTitle = when (type) {
+            "LEARNT" -> "已学习单词"
+            "ERROR" -> "错误单词"
+            "DONE" -> "已完成单词"
+            else -> "全部单词"
+        }
+        return when (type) {
+            "LEARNT" -> {
+                App.getDb().record().queryAllLearnDistinct()
+            }
 
+            "ERROR" -> {
+                App.getDb().word().queryAllError()
+            }
+
+            "DONE" -> {
+                App.getDb().word().queryAllDone()
+            }
+
+            else -> {
+                App.getDb().word().query(Config.getBookIndex())
+            }
+        }
+    }
 
     private fun timer() {
         val task: ThreadUtils.SimpleTask<Int> = object : ThreadUtils.SimpleTask<Int>() {
@@ -63,11 +90,11 @@ class WordViewModel : ViewModel() {
         }
         ThreadUtils.executeByCachedAtFixRate(task, 800, TimeUnit.MILLISECONDS)
     }
-    fun addLearnRecord(index: Int){
+
+    fun addLearnRecord(index: Int) {
         val id = beanList.value?.get(index)?.id
         id?.let {
-            val time = TimeUtils.getNowMills()
-            addRecord(LearnRecord(wordId = id,TimeUtils.getNowMills()-(time + TimeZone.getDefault().rawOffset) % (24 * 60 * 60 * 1000)))
+            addRecord(LearnRecord(wordId = id, TimerUtil.getTodayMills()))
         }
     }
 
@@ -86,36 +113,4 @@ class WordViewModel : ViewModel() {
 
         })
     }
-
-    fun cachePage(index: Int) {
-        CacheUtil.setStartIndex(cacheKey(), index)
-    }
-
-
-//    fun getYouDaoWordBean(index: Int) {
-//        if (beanList[index].youDaoWord != null) {
-//            getLineInterpret(index = index, youDaoWord = beanList[index].youDaoWord?.data)
-//            return
-//        }
-//
-//        YouDaoRequest().suggest(beanList[index].name,
-//            {
-//                beanList[index].youDaoWord = it
-//                getLineInterpret(index = index, youDaoWord = it?.data)
-//            }
-//        ) {
-//            interpret.value = beanList[index].getLineInterpret()
-//        }
-//    }
-
-//    private fun getLineInterpret(index: Int, youDaoWord: YouDaoWord.DataDTO?) {
-//        val string = if (youDaoWord?.query == beanList[index].name) {
-//            youDaoWord.entries?.filter { it.explain != null && it.explain != "" }
-//                ?.joinToString("\n") { it.explain }
-//        } else {
-//            beanList[index].getLineInterpret()
-//        }
-//        interpret.postValue(string)
-//    }
-
 }

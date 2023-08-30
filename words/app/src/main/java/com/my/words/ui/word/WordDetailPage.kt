@@ -73,7 +73,6 @@ fun WordDetailPage(
     val currentIndex = pagerState.currentPage
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
-            viewModel.cachePage(currentIndex)
             viewModel.playAudio(currentIndex)
             viewModel.addLearnRecord(currentIndex)
 //            viewModel.getYouDaoWordBean(currentIndex)
@@ -86,7 +85,7 @@ fun WordDetailPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                TopBarView("背单词:$currentIndex/${pagerState.pageCount}") {
+                TopBarView("${viewModel.typeTitle}:$currentIndex/${pagerState.pageCount}") {
                     navController.popBackStack()
                 }
                 HorizontalPager(

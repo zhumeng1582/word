@@ -4,11 +4,13 @@ import android.app.Application
 import android.util.Log
 import androidx.room.Room
 import com.blankj.utilcode.util.GsonUtils
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ResourceUtils
 import com.my.words.beans.WordBean
 import com.my.words.database.SQLDatabase
 import com.my.words.util.CacheUtil
 import com.my.words.util.ThreadUtilsEx
+import com.my.words.util.TimerUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
@@ -39,7 +41,9 @@ object Config {
     fun loadData(application: Application): SQLDatabase {
         val db = Room.databaseBuilder(application, SQLDatabase::class.java, "WordBean").build()
 
+
         GlobalScope.launch {
+
             var size = db.word().querySize()
             Log.d("loadData", "size = $size")
             if (size == 0L) {

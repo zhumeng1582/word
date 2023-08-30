@@ -12,9 +12,11 @@ import kotlinx.coroutines.launch
 class WordListViewModel : ViewModel() {
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
     var typeTitle: String = ""
+    var type: String = ""
 
     @OptIn(DelicateCoroutinesApi::class)
     fun setListType(type: String) {
+        this.type = type
         GlobalScope.launch {
             this@WordListViewModel.beanList.postValue(getList(type))
         }
@@ -29,7 +31,7 @@ class WordListViewModel : ViewModel() {
         }
         return when (type) {
             "LEARNT" -> {
-                App.getDb().record().queryAll()
+                App.getDb().record().queryAllLearnDistinct()
             }
 
             "ERROR" -> {

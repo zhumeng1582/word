@@ -8,6 +8,7 @@ object RouteName {
     const val SELECT_WORD = "selectWord"
     const val DETAIL = "detail/{index}"
     const val DETAIL_D = "detail/%d"
+    const val DETAIL_S = "detail/%s"
     const val WordListPage = "wordList/{type}"
     const val WordListPage_S = "wordList/%s"
 

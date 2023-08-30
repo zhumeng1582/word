@@ -53,8 +53,16 @@ fun AppScaffold() {
             composable(RouteName.DETAIL) {
                 it.arguments?.getString("index")
                     ?.let { index ->
-                        val vm: WordViewModel = viewModel()
-                        vm.setAssetName(index.toInt())
+                        val wordViewModel: WordViewModel = viewModel()
+                        when (index) {
+                            "LEARNT" ,"ERROR","DONE","ALL" -> {
+                                wordViewModel.setList(index)
+                            }
+                            else -> {
+                                wordViewModel.setAssetName(index.toInt())
+                            }
+                        }
+
                         WordDetailPage(navController)
                     }
             }
