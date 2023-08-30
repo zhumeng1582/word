@@ -1,7 +1,6 @@
 package com.my.words.ui.main
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.width
@@ -67,7 +66,7 @@ fun WordDetail(
     val index = Config.classList.indexOf(interpret.value)
     Column(modifier = modifier) {
         Button(
-            onClick = { navController.navigate(RouteName.DETAIL_D.format(index)) },
+            onClick = { navController.navigate(RouteName.DETAIL_S_D.format("$index", 0)) },
         ) {
             Text(text = "背单词")
         }

@@ -22,6 +22,8 @@ import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -47,24 +49,21 @@ fun AppScaffold() {
         NavHost(navController = navController, startDestination = RouteName.HOME) {
             composable(RouteName.HOME) { HomePage(navController) }
             composable(RouteName.BOOK) { BooksPage(navController) }
-            composable(RouteName.COLLECTION) { WebViewPage(navController, url = "https://web.shanbay.com/bdc/vocabtest#/") }
+            composable(RouteName.COLLECTION) {
+                WebViewPage(
+                    navController,
+                    url = "https://shared.youdao.com/dict/market/recite-vocabulary/dist/index.html"
+                )
+            }
             composable(RouteName.PROFILE) { SelectWordBookPage(navController) }
             composable(RouteName.SELECT_WORD) { SelectWordBookPage(navController) }
             composable(RouteName.DETAIL) {
-                it.arguments?.getString("index")
-                    ?.let { index ->
-                        val wordViewModel: WordViewModel = viewModel()
-                        when (index) {
-                            "LEARNT" ,"ERROR","DONE","ALL" -> {
-                                wordViewModel.setList(index)
-                            }
-                            else -> {
-                                wordViewModel.setAssetName(index.toInt())
-                            }
-                        }
-
-                        WordDetailPage(navController)
-                    }
+                print(it)
+                WordDetailPage(
+                    navController,
+                    it.arguments?.getString("type") ?: "5",
+                    it.arguments?.getString("index")?.toInt() ?: 0
+                )
             }
             composable(RouteName.WordListPage) {
                 it.arguments?.getString("type")

@@ -24,6 +24,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -34,6 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.blankj.utilcode.util.CollectionUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
@@ -50,32 +52,42 @@ import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WordDetailPage(
     navController: NavHostController,
+    wordType: String = "5",
+    startIndex: Int = 0,
     viewModel: WordViewModel = viewModel()
 ) {
+    viewModel.setListType(wordType)
     val beanList = viewModel.beanList.observeAsState()
-
+    beanList.value?.let { WordHorizontalPager(navController, it,startIndex) }
+}
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+fun WordHorizontalPager(
+    navController: NavHostController,
+    beanList: List<WordBean>,
+    startIndex: Int = 0,
+    viewModel: WordViewModel = viewModel()
+) {
     val coroutineScope = rememberCoroutineScope()
-
     val pagerState = rememberPagerState(
         //总页数
-        pageCount = beanList.value?.size ?: 0,
+        pageCount = beanList.size,
         //预加载的个数
         initialOffscreenLimit = 1,
         //是否无限循环
         infiniteLoop = false,
         //初始页面
-        initialPage = 0
+        initialPage = if((beanList.size) > startIndex) startIndex else 0
     )
+
     val currentIndex = pagerState.currentPage
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
             viewModel.playAudio(currentIndex)
             viewModel.addLearnRecord(currentIndex)
-//            viewModel.getYouDaoWordBean(currentIndex)
         }
 
     }
@@ -128,7 +140,6 @@ fun WordDetailPage(
         }
     }
 }
-
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun WordView(
@@ -136,11 +147,8 @@ private fun WordView(
     pageChangeClick: PageChangeClick,
     viewModel: WordViewModel = viewModel()
 ) {
-//    val interpret = viewModel.interpret.observeAsState()
     val playIcon = viewModel.playIcon.observeAsState()
-
     val bean = viewModel.beanList.value!![page]
-
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
             modifier = Modifier

@@ -2,6 +2,7 @@ package com.my.words.ui.word
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.TimeUtils
 import com.my.words.App
@@ -24,22 +25,23 @@ import java.util.concurrent.TimeUnit
 class WordViewModel : ViewModel() {
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
-
     var isPlaying = false
     var typeTitle = "背单词"
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun setAssetName(assetName: Int) {
+    fun setListType(type: String){
         GlobalScope.launch {
-            this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDownLimit20(assetName))
+            when (type) {
+                "LEARNT", "ERROR", "DONE", "ALL" -> {
+                    this@WordViewModel.beanList.postValue(getList(type))
+                }
+                else -> {
+                    this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDownLimit20(type.toInt()))
+                }
+            }
+            println("------------>setListType")
         }
         timer()
-    }
-    @OptIn(DelicateCoroutinesApi::class)
-    fun setList(type: String) {
-        GlobalScope.launch {
-            this@WordViewModel.beanList.postValue(getList(type))
-        }
     }
 
     private fun getList(type: String): List<WordBean> {

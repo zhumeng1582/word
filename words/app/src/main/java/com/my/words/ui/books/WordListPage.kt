@@ -43,7 +43,7 @@ fun WordListPage(
                 TopBarView(viewModel.typeTitle) {
                     navController.popBackStack()
                 }
-                list.value?.let { WordList(navController,it) }
+                list.value?.let { WordList(navController, it) }
             }
 
         }
@@ -51,20 +51,28 @@ fun WordListPage(
 }
 
 @Composable
-fun WordList(navController: NavHostController,messages: List<WordBean>,viewModel: WordListViewModel = viewModel()) {
+fun WordList(
+    navController: NavHostController,
+    messages: List<WordBean>,
+    viewModel: WordListViewModel = viewModel()
+) {
     LazyColumn {
         items(messages.size) { index ->
             Box(modifier = Modifier.clickable {
-                navController.navigate(RouteName.DETAIL_S.format(viewModel.type))
+                navController.navigate(RouteName.DETAIL_S_D.format(viewModel.type, index))
                 // 处理点击事件
             }) {
-                Row(modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(20.dp),) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(20.dp),
+                ) {
                     Column {
-                        Text(text = messages[index].name,
+                        Text(
+                            text = messages[index].name,
                             fontSize = 24.sp,
-                            color = Color.Blue)
+                            color = Color.Blue
+                        )
                         Text(text = messages[index].interpret, fontSize = 12.sp)
                     }
                 }

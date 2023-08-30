@@ -36,8 +36,11 @@ class SelectWordViewModel : ViewModel() {
                 val key = "" + (learnRecord.time - index * TimerUtil.dayMills)
                 map[key] = map[key]?.plus(1) ?: 1
             }
-            val value = map.maxBy { it.value }
-            maxContinueAccount.postValue(value.value)
+            if (map.isNotEmpty()) {
+                val value = map.maxBy { it.value }
+                maxContinueAccount.postValue(value.value)
+            }
+
         }
     }
 

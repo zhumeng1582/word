@@ -6,9 +6,8 @@ object RouteName {
     const val COLLECTION = "collection"
     const val PROFILE = "profile"
     const val SELECT_WORD = "selectWord"
-    const val DETAIL = "detail/{index}"
-    const val DETAIL_D = "detail/%d"
-    const val DETAIL_S = "detail/%s"
+    const val DETAIL = "detail/{type}/{index}"
+    const val DETAIL_S_D = "detail/%s/%d"
     const val WordListPage = "wordList/{type}"
     const val WordListPage_S = "wordList/%s"
 
