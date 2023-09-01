@@ -2,9 +2,7 @@ package com.my.words.ui.word
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.ThreadUtils
-import com.blankj.utilcode.util.TimeUtils
 import com.my.words.App
 import com.my.words.Config
 import com.my.words.R
@@ -14,12 +12,10 @@ import com.my.words.beans.addRecord
 import com.my.words.beans.getAudioUrl
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
-import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 class WordViewModel : ViewModel() {
@@ -36,7 +32,7 @@ class WordViewModel : ViewModel() {
                     this@WordViewModel.beanList.postValue(getList(type))
                 }
                 else -> {
-                    this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDownLimit20(type.toInt()))
+                    this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDoneLimit20(type.toInt()))
                 }
             }
             println("------------>setListType")

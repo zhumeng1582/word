@@ -19,7 +19,7 @@ interface WordDao {
     fun query(level: Int): List<WordBean>
 
     @Query("select * from WordBean where level = :level and isDone = false limit 20")
-    fun queryNotDownLimit20(level: Int): List<WordBean>
+    fun queryNotDoneLimit20(level: Int): List<WordBean>
     @Query("select * from WordBean where errorCount > 0")
     fun queryAllError(): List<WordBean>
     @Query("select * from WordBean where isDone = true")

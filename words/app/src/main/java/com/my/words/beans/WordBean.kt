@@ -20,7 +20,7 @@ data class WordBean(
     var errorCount: Int = 0,
 )
 
-fun WordBean.setDown(isDone:Boolean) {
+fun WordBean.setDone(isDone:Boolean) {
     this.isDone = isDone
     update(this)
 }

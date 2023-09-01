@@ -24,7 +24,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -35,18 +34,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.blankj.utilcode.util.CollectionUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
 import com.my.words.beans.WordBean
-import com.my.words.beans.addRecord
 import com.my.words.beans.errorCountAdd
 import com.my.words.beans.getExample
 import com.my.words.beans.getLineInterpret
-import com.my.words.beans.setDown
+import com.my.words.beans.setDone
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
@@ -124,14 +121,17 @@ fun WordHorizontalPager(
                         }
 
                         override fun remember(bean: WordBean) {
-                            bean.setDown(true)
+                            bean.setDone(true)
                             ToastUtils.showLong("已标记为认识")
+                            next()
                         }
 
                         override fun notRemember(bean: WordBean) {
-                            bean.setDown(false)
+                            bean.setDone(false)
                             bean.errorCountAdd()
                             ToastUtils.showLong("已标记为不认识")
+                            next()
+
                         }
 
                     })
