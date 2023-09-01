@@ -56,10 +56,12 @@ fun WordDetailPage(
     startIndex: Int = 0,
     viewModel: WordViewModel = viewModel()
 ) {
-    viewModel.setListType(wordType)
     val beanList = viewModel.beanList.observeAsState()
-    beanList.value?.let { WordHorizontalPager(navController, it,startIndex) }
+    beanList.value?.let { WordHorizontalPager(navController, it, startIndex) }
+    viewModel.setListType(wordType)
+
 }
+
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun WordHorizontalPager(
@@ -77,7 +79,7 @@ fun WordHorizontalPager(
         //是否无限循环
         infiniteLoop = false,
         //初始页面
-        initialPage = if((beanList.size) > startIndex) startIndex else 0
+        initialPage = if ((beanList.size) > startIndex) startIndex else 0
     )
 
     val currentIndex = pagerState.currentPage
@@ -94,7 +96,7 @@ fun WordHorizontalPager(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                TopBarView("${viewModel.typeTitle}:$currentIndex/${pagerState.pageCount}") {
+                TopBarView("${viewModel.typeTitle}:${currentIndex + 1}/${pagerState.pageCount}") {
                     navController.popBackStack()
                 }
                 HorizontalPager(
@@ -123,15 +125,12 @@ fun WordHorizontalPager(
                         override fun remember(bean: WordBean) {
                             bean.setDone(true)
                             ToastUtils.showLong("已标记为认识")
-                            next()
                         }
 
                         override fun notRemember(bean: WordBean) {
                             bean.setDone(false)
                             bean.errorCountAdd()
                             ToastUtils.showLong("已标记为不认识")
-                            next()
-
                         }
 
                     })
@@ -140,6 +139,7 @@ fun WordHorizontalPager(
         }
     }
 }
+
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
 private fun WordView(

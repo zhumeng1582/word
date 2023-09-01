@@ -25,14 +25,17 @@ class WordViewModel : ViewModel() {
     var typeTitle = "背单词"
 
     @OptIn(DelicateCoroutinesApi::class)
-    fun setListType(type: String){
+    fun setListType(type: String) {
         GlobalScope.launch {
             when (type) {
                 "LEARNT", "ERROR", "DONE", "ALL" -> {
                     this@WordViewModel.beanList.postValue(getList(type))
                 }
+
                 else -> {
-                    this@WordViewModel.beanList.postValue(App.getDb().word().queryNotDoneLimit20(type.toInt()))
+                    this@WordViewModel.beanList.postValue(
+                        App.getDb().record().queryAllNotLearn(type.toInt())
+                    )
                 }
             }
             println("------------>setListType")

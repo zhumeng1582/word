@@ -11,8 +11,12 @@ import com.my.words.beans.WordBean
 interface LearnRecordDao {
     @Query("SELECT * from WordBean INNER JOIN LearnRecord ON WordBean.id=LearnRecord.wordId")
     fun queryAllLearn(): List<WordBean>
+
     @Query("SELECT * from WordBean INNER JOIN (select distinct LearnRecord.wordId from LearnRecord) relation ON WordBean.id=relation.wordId")
     fun queryAllLearnDistinct(): List<WordBean>
+
+    @Query("select * from  WordBean where WordBean.id not in (select  distinct LearnRecord.wordId from LearnRecord) and WordBean.level = :level limit 20")
+    fun queryAllNotLearn(level: Int): List<WordBean>
 
     @Insert
     fun insert(vararg record: LearnRecord): List<Long>
