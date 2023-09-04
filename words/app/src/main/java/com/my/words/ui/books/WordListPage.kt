@@ -24,13 +24,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.my.words.beans.WordBean
 import com.my.words.ui.theme.WordsTheme
+import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
 
 @Composable
 fun WordListPage(
     navController: NavHostController,
-    viewModel: WordListViewModel = viewModel()
+    viewModel: WordViewModel
 ) {
     val list = viewModel.beanList.observeAsState()
 
@@ -40,10 +41,10 @@ fun WordListPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TopBarView(viewModel.typeTitle) {
+                TopBarView(viewModel.getTitle()) {
                     navController.popBackStack()
                 }
-                list.value?.let { WordList(navController, it) }
+                list.value?.let { WordList(navController, it,viewModel) }
             }
 
         }
@@ -54,7 +55,7 @@ fun WordListPage(
 fun WordList(
     navController: NavHostController,
     messages: List<WordBean>,
-    viewModel: WordListViewModel = viewModel()
+    viewModel: WordViewModel
 ) {
     LazyColumn {
         items(messages.size) { index ->

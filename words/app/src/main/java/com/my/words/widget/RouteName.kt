@@ -10,6 +10,8 @@ object RouteName {
     const val DETAIL_S_D = "detail/%s/%d"
     const val WordListPage = "wordList/{type}"
     const val WordListPage_S = "wordList/%s"
+    const val WORD_TEST = "wordTest/{type}"
+    const val WORD_TEST_D = "wordTest/%s"
 
     const val WEB_VIEW = "web_view"
     const val LOGIN = "login"

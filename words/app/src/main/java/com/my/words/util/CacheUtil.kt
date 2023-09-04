@@ -2,6 +2,7 @@ package com.my.words.util
 
 object CacheUtil {
     const val WordBookName = "WordBookName"
+    const val LearnWordId = "LearnWordId"
     fun getWordBookName(): String {
         return MMKVManager.getString(WordBookName, "第一级")
     }
@@ -10,11 +11,11 @@ object CacheUtil {
         MMKVManager.putString(WordBookName, wordBookName)
     }
 
-    fun getStartIndex(key: String): Int {
-        return MMKVManager.getInt(key, 0)
+    fun getLearnWordId(): Int {
+        return MMKVManager.getInt(getWordBookName() + LearnWordId, 0)
     }
 
-    fun setStartIndex(key: String, index: Int) {
-        MMKVManager.putInt(key, index)
+    fun setLearnWordId(id: Int) {
+        MMKVManager.putInt(getWordBookName() + LearnWordId, id)
     }
 }

@@ -37,6 +37,7 @@ import androidx.navigation.NavHostController
 import com.blankj.utilcode.util.ToastUtils
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
+import com.google.accompanist.pager.PagerState
 import com.google.accompanist.pager.rememberPagerState
 import com.my.words.R
 import com.my.words.beans.WordBean
@@ -45,6 +46,7 @@ import com.my.words.beans.getExample
 import com.my.words.beans.getLineInterpret
 import com.my.words.beans.setDone
 import com.my.words.ui.theme.WordsTheme
+import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -54,10 +56,14 @@ fun WordDetailPage(
     navController: NavHostController,
     wordType: String = "5",
     startIndex: Int = 0,
-    viewModel: WordViewModel = viewModel()
+    viewModel: WordViewModel
 ) {
     val beanList = viewModel.beanList.observeAsState()
-    beanList.value?.let { WordHorizontalPager(navController, it, startIndex) }
+    beanList.value?.let {
+        if (it.isNotEmpty()) {
+            WordHorizontalPager(navController, it, wordType, startIndex, viewModel)
+        }
+    }
     viewModel.setListType(wordType)
 
 }
@@ -67,13 +73,14 @@ fun WordDetailPage(
 fun WordHorizontalPager(
     navController: NavHostController,
     beanList: List<WordBean>,
+    wordType: String,
     startIndex: Int = 0,
-    viewModel: WordViewModel = viewModel()
+    viewModel: WordViewModel
 ) {
     val coroutineScope = rememberCoroutineScope()
     val pagerState = rememberPagerState(
         //总页数
-        pageCount = beanList.size,
+        pageCount = beanList.size + 1,
         //预加载的个数
         initialOffscreenLimit = 1,
         //是否无限循环
@@ -85,10 +92,11 @@ fun WordHorizontalPager(
     val currentIndex = pagerState.currentPage
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
-            viewModel.playAudio(currentIndex)
-            viewModel.addLearnRecord(currentIndex)
+            if (currentIndex < beanList.size) {
+                viewModel.playAudio(currentIndex)
+                viewModel.addLearnRecord(currentIndex)
+            }
         }
-
     }
     WordsTheme {
         Surface(
@@ -96,7 +104,7 @@ fun WordHorizontalPager(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                TopBarView("${viewModel.typeTitle}:${currentIndex + 1}/${pagerState.pageCount}") {
+                TopBarView(getTitle(viewModel, currentIndex, pagerState)) {
                     navController.popBackStack()
                 }
                 HorizontalPager(
@@ -104,40 +112,81 @@ fun WordHorizontalPager(
                     modifier = Modifier
                         .fillMaxSize(),
                 ) { page ->
-
-                    WordView(page, object : PageChangeClick {
-                        override fun pre() {
-                            coroutineScope.launch {
-                                if (currentIndex > 1) {
-                                    pagerState.scrollToPage(currentIndex - 1)
+                    if (page < beanList.size) {
+                        WordView(page, object : PageChangeClick {
+                            override fun pre() {
+                                coroutineScope.launch {
+                                    if (currentIndex > 1) {
+                                        pagerState.scrollToPage(currentIndex - 1)
+                                    }
                                 }
                             }
-                        }
 
-                        override fun next() {
-                            coroutineScope.launch {
-                                if (currentIndex < viewModel.beanList.value!!.size + 1) {
-                                    pagerState.scrollToPage(currentIndex + 1)
+                            override fun next() {
+                                coroutineScope.launch {
+                                    if (currentIndex < pagerState.pageCount - 1) {
+                                        pagerState.scrollToPage(currentIndex + 1)
+                                    }
                                 }
                             }
-                        }
 
-                        override fun remember(bean: WordBean) {
-                            bean.setDone(true)
-                            ToastUtils.showLong("已标记为认识")
-                        }
+                            override fun remember(bean: WordBean) {
+                                bean.setDone(true)
+                                ToastUtils.showLong("已标记为认识")
+                            }
 
-                        override fun notRemember(bean: WordBean) {
-                            bean.setDone(false)
-                            bean.errorCountAdd()
-                            ToastUtils.showLong("已标记为不认识")
-                        }
+                            override fun notRemember(bean: WordBean) {
+                                bean.setDone(false)
+                                bean.errorCountAdd()
+                                ToastUtils.showLong("已标记为不认识")
+                            }
 
-                    })
+                        }, viewModel)
+                    } else {
+                        Column(
+                            modifier = Modifier.fillMaxSize(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            if (viewModel.isLearnType()) {
+                                Button(onClick = {
+                                    navController.navigate(RouteName.WORD_TEST_D.format(wordType))
+                                }) {
+                                    Text(text = "开始测试")
+                                }
+                            } else {
+                                Button(onClick = {
+                                    navController.navigate(RouteName.HOME) {
+                                        popUpTo(RouteName.HOME)
+                                        launchSingleTop = true
+                                    }
+                                }) {
+                                    Text(text = "完成")
+                                }
+                            }
+
+                        }
+                    }
                 }
             }
         }
     }
+}
+
+@OptIn(ExperimentalPagerApi::class)
+@Composable
+private fun getTitle(viewModel: WordViewModel, currentIndex: Int, pagerState: PagerState): String {
+
+    return if (currentIndex <= pagerState.pageCount - 2) {
+        "${viewModel.getTitle()}:${currentIndex + 1}/${pagerState.pageCount - 1}"
+    } else {
+        if (viewModel.isLearnType()) {
+            "开始测试"
+        } else {
+            "完成复习"
+        }
+    }
+
 }
 
 @SuppressLint("CoroutineCreationDuringComposition")
@@ -145,7 +194,7 @@ fun WordHorizontalPager(
 private fun WordView(
     page: Int,
     pageChangeClick: PageChangeClick,
-    viewModel: WordViewModel = viewModel()
+    viewModel: WordViewModel
 ) {
     val playIcon = viewModel.playIcon.observeAsState()
     val bean = viewModel.beanList.value!![page]

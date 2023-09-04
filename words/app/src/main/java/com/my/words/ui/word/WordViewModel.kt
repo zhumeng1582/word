@@ -12,6 +12,7 @@ import com.my.words.beans.addRecord
 import com.my.words.beans.getAudioUrl
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
+import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
@@ -19,13 +20,18 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class WordViewModel : ViewModel() {
-    val beanList: MutableLiveData<List<WordBean>> = MutableLiveData()
+    val beanList: MutableLiveData<List<WordBean>> = MutableLiveData(arrayListOf())
+    val currentIndex: MutableLiveData<Int> = MutableLiveData(0)
+    val testData: MutableMap<Int, MutableList<WordBean>> = LinkedHashMap()
+    val selectTestData: MutableMap<Int, Int> = HashMap()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
-    var isPlaying = false
-    var typeTitle = "背单词"
+    private var isPlaying = false
+    var type = ""
 
     @OptIn(DelicateCoroutinesApi::class)
     fun setListType(type: String) {
+        this.type = type
+        print("--------->getList = $type")
         GlobalScope.launch {
             when (type) {
                 "LEARNT", "ERROR", "DONE", "ALL" -> {
@@ -34,22 +40,80 @@ class WordViewModel : ViewModel() {
 
                 else -> {
                     this@WordViewModel.beanList.postValue(
-                        App.getDb().record().queryAllNotLearn(type.toInt())
+                        App.getDb().word()
+                            .queryAllNotLearn(type.toInt(), CacheUtil.getLearnWordId())
                     )
+                    this@WordViewModel.beanList.value?.forEach { it1 ->
+                        val index = (0..3).random()
+                        val list = App.getDb().word().queryTestData().toMutableList()
+                        list.removeIf { it.id == it1.id }
+
+                        val newList = list.subList(0, 3)
+                        newList.add(index, it1)
+                        testData[it1.id] = newList
+                    }
                 }
             }
-            println("------------>setListType")
+
         }
         timer()
     }
 
-    private fun getList(type: String): List<WordBean> {
-        this.typeTitle = when (type) {
+    fun setSelectTestData(id: Int, selectId: Int) {
+        selectTestData[id] = selectId
+    }
+
+    fun getSelectTestId(id: Int): Int {
+        return selectTestData[id] ?: -1
+    }
+
+
+    fun testNext(): Boolean {
+        val index = currentIndex.value ?: 0
+        if (index + 1 < (beanList.value?.size ?: 0)) {
+            currentIndex.postValue(index + 1)
+            return true
+        }
+        return false
+    }
+
+    //是学习类型还是复习类型
+    fun isLearnType(): Boolean {
+        return try {
+            type.toInt()
+            true
+        } catch (_: NumberFormatException) {
+            false
+        }
+    }
+
+
+    fun setLearnId(type: String, index: Int) {
+        try {
+            if (index + 1 == beanList.value?.size) {
+                type.toInt()
+                val id = beanList.value?.get(index)?.id
+                id?.let {
+                    CacheUtil.setLearnWordId(it)
+                }
+            }
+
+        } catch (_: NumberFormatException) {
+        }
+    }
+
+    fun getTitle(): String {
+        return when (type) {
             "LEARNT" -> "已学习单词"
             "ERROR" -> "错误单词"
             "DONE" -> "已完成单词"
-            else -> "全部单词"
+            "ALL" -> "全部单词"
+            else -> "学习单词"
         }
+    }
+
+    private fun getList(type: String): List<WordBean> {
+
         return when (type) {
             "LEARNT" -> {
                 App.getDb().record().queryAllLearnDistinct()
