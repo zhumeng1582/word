@@ -23,7 +23,6 @@ class WordViewModel : ViewModel() {
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData(arrayListOf())
     val currentIndex: MutableLiveData<Int> = MutableLiveData(0)
     val testData: MutableMap<Int, MutableList<WordBean>> = LinkedHashMap()
-    val selectTestData: MutableMap<Int, Int> = HashMap()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
     private var isPlaying = false
     var type = ""
@@ -59,15 +58,6 @@ class WordViewModel : ViewModel() {
         timer()
     }
 
-    fun setSelectTestData(id: Int, selectId: Int) {
-        selectTestData[id] = selectId
-    }
-
-    fun getSelectTestId(id: Int): Int {
-        return selectTestData[id] ?: -1
-    }
-
-
     fun testNext(): Boolean {
         val index = currentIndex.value ?: 0
         if (index + 1 < (beanList.value?.size ?: 0)) {
@@ -88,16 +78,10 @@ class WordViewModel : ViewModel() {
     }
 
 
-    fun setLearnId(type: String, index: Int) {
+    fun setLearnId(type: String, wordId: Int) {
         try {
-            if (index + 1 == beanList.value?.size) {
-                type.toInt()
-                val id = beanList.value?.get(index)?.id
-                id?.let {
-                    CacheUtil.setLearnWordId(it)
-                }
-            }
-
+            type.toInt()
+            CacheUtil.setLearnWordId(wordId)
         } catch (_: NumberFormatException) {
         }
     }
