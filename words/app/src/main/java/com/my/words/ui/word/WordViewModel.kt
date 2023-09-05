@@ -79,12 +79,20 @@ class WordViewModel : ViewModel() {
 
     fun getTitle(): String {
         return when (type) {
-            "LEARNT" -> "已学习单词"
-            "ERROR" -> "错误单词"
-            "DONE" -> "已完成单词"
-            "ALL" -> "全部单词"
+            "LEARNT" -> "已学习单词:${beanList.value?.size}"
+            "ERROR" -> "错误单词:${beanList.value?.size}"
+            "DONE" -> "已完成单词:${beanList.value?.size}"
+            "ALL" -> "全部单词:${getLearnSize()}/${beanList.value?.size}"
             else -> "学习单词"
         }
+    }
+
+    fun getLearnWordId(): Int {
+        return CacheUtil.getLearnWordId()
+    }
+
+    private fun getLearnSize(): Int {
+        return beanList.value?.count { it.id <= CacheUtil.getLearnWordId() } ?: 0
     }
 
     private fun getList(type: String): List<WordBean> {

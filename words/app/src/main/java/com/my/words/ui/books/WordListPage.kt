@@ -41,10 +41,13 @@ fun WordListPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                TopBarView(viewModel.getTitle()) {
-                    navController.popBackStack()
+
+                list.value?.let {
+                    TopBarView(viewModel.getTitle()) {
+                        navController.popBackStack()
+                    }
+                    WordList(navController, it, viewModel)
                 }
-                list.value?.let { WordList(navController, it,viewModel) }
             }
 
         }
@@ -63,12 +66,23 @@ fun WordList(
                 navController.navigate(RouteName.DETAIL_S_D.format(viewModel.type, index))
                 // 处理点击事件
             }) {
+                if (viewModel.getLearnWordId() == messages[index].id) {
+                    Text(
+                        text = "当前学习位置",
+                        fontSize = 12.sp,
+                        color = Color.Green,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, top = 5.dp),
+                    )
+                }
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(20.dp),
                 ) {
                     Column {
+
                         Text(
                             text = messages[index].name,
                             fontSize = 24.sp,

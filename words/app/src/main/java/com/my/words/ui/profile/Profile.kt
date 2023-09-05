@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.widget.HomeTopBarView
+import com.my.words.widget.RouteName
 
 @Composable
 fun Profile(navController: NavHostController) {
@@ -30,6 +31,11 @@ fun Profile(navController: NavHostController) {
                 }
                 Button(onClick = { }) {
                     Text(text = "学习记录")
+                }
+                Button(onClick = {
+                    navController.navigate(RouteName.SETTING)
+                }) {
+                    Text(text = "设置")
                 }
             }
         }

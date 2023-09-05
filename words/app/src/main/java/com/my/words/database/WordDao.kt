@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
 import com.my.words.beans.WordBean
+import com.my.words.util.CacheUtil
 
 @Dao
 interface WordDao {
@@ -27,9 +28,12 @@ interface WordDao {
     @Query("select * from WordBean where isDone = true")
     fun queryAllDone(): List<WordBean>
 
-    //Select * from emp where sal > 2000 and sal < 3000;
-    @Query("select * from  WordBean where WordBean.id>:learnId and WordBean.level = :level limit 5")
-    fun queryAllNotLearn(level: Int, learnId: Int): List<WordBean>
+    @Query("select * from  WordBean where WordBean.id>:learnId and WordBean.level = :level limit :count")
+    fun queryAllNotLearn(
+        level: Int,
+        learnId: Int,
+        count: Int = CacheUtil.getLearnWordCount()
+    ): List<WordBean>
 
     @Query("select * from  WordBean ORDER BY RANDOM() limit 4 ")
     fun queryTestData(): List<WordBean>

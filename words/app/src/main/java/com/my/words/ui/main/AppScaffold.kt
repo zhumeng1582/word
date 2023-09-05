@@ -16,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import com.my.words.ui.books.BooksPage
 import com.my.words.ui.books.WordListPage
 import com.my.words.ui.profile.Profile
+import com.my.words.ui.profile.Setting
 import com.my.words.ui.select.SelectWordBookPage
 import com.my.words.ui.webview.WebViewPage
 import com.my.words.ui.word.WordDetailPage
@@ -55,6 +56,7 @@ fun AppScaffold() {
                 )
             }
             composable(RouteName.PROFILE) { Profile(navController) }
+            composable(RouteName.SETTING) { Setting(navController) }
             composable(RouteName.SELECT_WORD) { SelectWordBookPage(navController) }
             composable(RouteName.DETAIL) {
                 WordDetailPage(
