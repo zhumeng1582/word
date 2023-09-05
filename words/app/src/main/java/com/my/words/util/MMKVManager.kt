@@ -33,5 +33,20 @@ class MMKVManager private constructor() {
         fun putInt(key: String, defValue: Int) {
             mmkv().putInt(key, defValue)
         }
+
+        fun putBoolean(key: String, defValue: Boolean) {
+            mmkv().putBoolean(key, defValue)
+        }
+
+        fun getBoolean(key: String, defValue: Boolean): Boolean {
+            return mmkv().getBoolean(key, defValue)
+        }
+
+        fun containsKey(key: String): Boolean {
+            return mmkv().containsKey(key)
+        }
+        fun remove(key: String) {
+            mmkv().remove(key)
+        }
     }
 }

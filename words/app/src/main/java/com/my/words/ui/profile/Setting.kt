@@ -1,6 +1,7 @@
 package com.my.words.ui.profile
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,10 +18,12 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,14 +41,20 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.blankj.utilcode.util.ToastUtils
 import com.my.words.ui.theme.WordsTheme
+import com.my.words.util.CacheUtil
 import com.my.words.widget.TopBarView
 import com.my.words.widget.numberpicker.NumberPicker
 
 @Composable
-fun Setting(navController: NavHostController, settingMode: SettingMode = viewModel()) {
+fun Setting(
+    navController: NavHostController,
+    settingMode: SettingMode = SettingMode(CacheUtil.isDarkTheme(), isSystemInDarkTheme())
+) {
     val openDialog = remember { mutableStateOf(false) }
+    val isDarkTheme = settingMode.isDarkTheme.observeAsState()
+    val isSystemInDarkTheme = settingMode.isSystemInDarkTheme.observeAsState()
 
-    WordsTheme {
+    WordsTheme(darkTheme = isDarkTheme.value!!) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -64,10 +73,27 @@ fun Setting(navController: NavHostController, settingMode: SettingMode = viewMod
                 }) {
                     Text(text = "修改学习计划")
                 }
-
-                Button(onClick = { }) {
-                    Text(text = "夜间模式")
+                Text(text = "夜间模式")
+                Row {
+                    Switch(
+                        checked = isSystemInDarkTheme.value!!,
+                        onCheckedChange = {
+                            settingMode.setIsSystemInDarkTheme(it)
+                        }
+                    )
+                    Text(text = if (isSystemInDarkTheme.value == true) "当前是跟随系统" else "当前是不跟随系统")
                 }
+                Row {
+                    Switch(
+                        checked = isDarkTheme.value!!,
+                        enabled = !isSystemInDarkTheme.value!!,
+                        onCheckedChange = {
+                            settingMode.setDarkTheme(it)
+                        }
+                    )
+                    Text(text = if (isDarkTheme.value == true) "深色模式" else "浅色模式")
+                }
+
             }
             if (openDialog.value) {
                 dialogLearnPlan(openDialog)
@@ -76,6 +102,7 @@ fun Setting(navController: NavHostController, settingMode: SettingMode = viewMod
     }
 
 }
+
 
 @Composable
 fun dialogLearnPlan(state: MutableState<Boolean>, settingMode: SettingMode = viewModel()) {
