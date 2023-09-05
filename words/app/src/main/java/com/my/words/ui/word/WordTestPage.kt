@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,22 +35,34 @@ import androidx.navigation.NavHostController
 import com.blankj.utilcode.util.ToastUtils
 import com.my.words.R
 import com.my.words.beans.WordBean
+import com.my.words.beans.errorCountAdd
+import com.my.words.beans.setDone
 import com.my.words.ui.theme.Purple80
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.ThreadUtilsEx
 import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun WordTestPage(
     navController: NavHostController,
     wordType: String = "5",
-    viewModel: WordViewModel
+    viewModel: WordViewModel,
+    wordTestViewModel: WordTestViewModel = viewModel()
 ) {
     val beanList = viewModel.beanList.value!!
-    val currentIndexState = viewModel.currentIndex.observeAsState()
+    val currentIndexState = wordTestViewModel.currentIndex.observeAsState()
     val currentIndex = currentIndexState.value!!
-    viewModel.playAudio(currentIndex)
+    LaunchedEffect(currentIndex) {
+        launch(Dispatchers.IO) {
+            if (currentIndex < beanList.size) {
+                viewModel.playAudio(currentIndex)
+            }
+        }
+    }
+
     WordsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -59,9 +72,9 @@ fun WordTestPage(
                 TopBarView("${viewModel.getTitle()}:${currentIndex + 1}/${beanList.size}") {
                     navController.popBackStack()
                 }
-                WordView(currentIndex, viewModel) { dateBean ->
+                WordView(currentIndex, viewModel, wordTestViewModel) { dateBean ->
 
-                    if (!viewModel.testNext()) {
+                    if (!wordTestViewModel.testNext(beanList.size)) {
                         navController.navigate(RouteName.HOME) {
                             popUpTo(RouteName.HOME)
                             launchSingleTop = true
@@ -81,7 +94,7 @@ fun WordTestPage(
 private fun WordView(
     currentIndex: Int,
     viewModel: WordViewModel,
-    wordTestViewModel: WordTestViewModel = viewModel(),
+    wordTestViewModel: WordTestViewModel,
     onTestClick: (WordBean) -> Unit
 ) {
     val selectId = wordTestViewModel.selectId.observeAsState()
@@ -120,7 +133,7 @@ private fun WordView(
         Spacer(modifier = Modifier.padding(top = 20.dp))
         testData.forEach {
             SelectItem(selectId.value!!, bean, it) { dateBean, itemBean ->
-                wordTestViewModel.setSelectId(itemBean.id)
+                wordTestViewModel.setSelectId(dateBean, itemBean)
                 ThreadUtilsEx.runOnUiThreadDelayed(1000) { onTestClick(dateBean) }
             }
         }
@@ -160,13 +173,15 @@ fun getButtonBackgroundColor(
     dateBean: WordBean,
     itemBean: WordBean
 ): Color {
-    return if (selectId == itemBean.id) {
-        if (selectId == dateBean.id) {
-            Color.Green
-        } else {
-            Color.Red
-        }
-    } else {
+    return if (selectId == -1) {
         Purple80
+    } else {
+        if (itemBean.id == dateBean.id) {
+            Color.Green
+        } else if (selectId == itemBean.id) {
+            Color.Red
+        } else {
+            Purple80
+        }
     }
 }

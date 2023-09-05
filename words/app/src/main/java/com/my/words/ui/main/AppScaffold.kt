@@ -65,7 +65,6 @@ fun AppScaffold() {
                 )
             }
             composable(RouteName.WORD_TEST) {
-                vm.currentIndex.value = 0
                 WordTestPage(
                     navController,
                     it.arguments?.getString("type") ?: "5",

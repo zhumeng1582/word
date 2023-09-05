@@ -21,7 +21,6 @@ import java.util.concurrent.TimeUnit
 
 class WordViewModel : ViewModel() {
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData(arrayListOf())
-    val currentIndex: MutableLiveData<Int> = MutableLiveData(0)
     val testData: MutableMap<Int, MutableList<WordBean>> = LinkedHashMap()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
     private var isPlaying = false
@@ -30,7 +29,7 @@ class WordViewModel : ViewModel() {
     @OptIn(DelicateCoroutinesApi::class)
     fun setListType(type: String) {
         this.type = type
-        print("--------->getList = $type")
+        this@WordViewModel.beanList.postValue(arrayListOf())
         GlobalScope.launch {
             when (type) {
                 "LEARNT", "ERROR", "DONE", "ALL" -> {
@@ -58,14 +57,6 @@ class WordViewModel : ViewModel() {
         timer()
     }
 
-    fun testNext(): Boolean {
-        val index = currentIndex.value ?: 0
-        if (index + 1 < (beanList.value?.size ?: 0)) {
-            currentIndex.postValue(index + 1)
-            return true
-        }
-        return false
-    }
 
     //是学习类型还是复习类型
     fun isLearnType(): Boolean {
