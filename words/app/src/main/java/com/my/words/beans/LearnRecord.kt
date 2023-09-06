@@ -5,6 +5,7 @@ import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
 import com.my.words.App
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 
@@ -21,6 +22,7 @@ data class LearnRecord(
     val time: Long,
 )
 
+@OptIn(DelicateCoroutinesApi::class)
 fun addRecord(bean: LearnRecord) {
     GlobalScope.launch {
         if (App.getDb().record().exit(bean.wordId, bean.time) == 0L) {

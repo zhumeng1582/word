@@ -35,9 +35,6 @@ fun AppScaffold() {
     val vm: WordViewModel = viewModel()
 
     Scaffold(
-        modifier = Modifier
-            .statusBarsPadding()
-            .navigationBarsPadding(),
         bottomBar = {
             when (currentDestination?.route) {
                 RouteName.HOME -> BottomNavBarView(navCtrl = navController)
