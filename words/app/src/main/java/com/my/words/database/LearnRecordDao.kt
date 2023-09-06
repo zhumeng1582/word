@@ -21,14 +21,21 @@ interface LearnRecordDao {
     @Update
     fun update(record: LearnRecord): Int
 
+
+    //学习日期排序
     @Query("select distinct LearnRecord.time from LearnRecord ORDER BY LearnRecord.time")
     fun accumulateContinueAccount(): List<LearnRecord>
 
+    //累计学习天数
     @Query("SELECT count(distinct LearnRecord.time) from LearnRecord")
     fun accumulateAccount(): Int
 
+    //累计学习单词数
     @Query("SELECT count(distinct LearnRecord.wordId) from LearnRecord")
     fun accumulateLearnWords(): Int
+    //累计学习单词数
+    @Query("SELECT count(distinct LearnRecord.wordId) from LearnRecord where LearnRecord.time =:time")
+    fun todayLearnWords(time:Long): Int
 
     @Query("SELECT count(*) from LearnRecord where LearnRecord.wordId = :wordId and LearnRecord.time = :time")
     fun exit(wordId: Int, time: Long): Long

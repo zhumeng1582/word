@@ -4,6 +4,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.LogUtils
 import com.my.words.App
+import com.my.words.beans.StatisticData
 import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
 import kotlinx.coroutines.DelicateCoroutinesApi
@@ -12,9 +13,8 @@ import kotlinx.coroutines.launch
 
 class SelectWordViewModel : ViewModel() {
     val selectWord by lazy { MutableLiveData(CacheUtil.getWordBookName()) }
-    val accumulateAccount: MutableLiveData<Int> = MutableLiveData(0)
-    val accumulateLearntAccount: MutableLiveData<Int> = MutableLiveData(0)
-    val maxContinueAccount: MutableLiveData<Int> = MutableLiveData(0)
+    val statisticData: MutableLiveData<StatisticData> = MutableLiveData()
+
     fun setSelectWord(name: String) {
         selectWord.postValue(name)
         CacheUtil.setWordBookName(name)
@@ -23,11 +23,11 @@ class SelectWordViewModel : ViewModel() {
     @OptIn(DelicateCoroutinesApi::class)
     fun getData() {
         GlobalScope.launch {
-            val count = App.getDb().record().accumulateAccount()
-            accumulateAccount.postValue(count)
-
-            val countWords = App.getDb().record().accumulateLearnWords()
-            accumulateLearntAccount.postValue(countWords)
+            val statistic = StatisticData()
+            statistic.accumulateAccount = App.getDb().record().accumulateAccount()
+            statistic.accumulateLearntAccount = App.getDb().record().accumulateLearnWords()
+            statistic.todayLearnAccount =
+                App.getDb().record().todayLearnWords(TimerUtil.getTodayMills())
 
             val map = HashMap<String, Int>()
             val list = App.getDb().record().accumulateContinueAccount()
@@ -38,8 +38,9 @@ class SelectWordViewModel : ViewModel() {
             }
             if (map.isNotEmpty()) {
                 val value = map.maxBy { it.value }
-                maxContinueAccount.postValue(value.value)
+                statistic.maxContinueAccount = value.value
             }
+            statisticData.postValue(statistic)
 
         }
     }

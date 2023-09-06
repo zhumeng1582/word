@@ -43,7 +43,6 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
 
                 WordDetail(
                     navController, Modifier
-                        .width(150.dp)
                         .align(alignment = Alignment.CenterHorizontally)
                 )
             }
@@ -59,9 +58,7 @@ fun WordDetail(
     viewModel: SelectWordViewModel = viewModel()
 ) {
     val interpret = viewModel.selectWord.observeAsState()
-    val accumulateAccount = viewModel.accumulateAccount.observeAsState()
-    val accumulateLearntAccount = viewModel.accumulateLearntAccount.observeAsState()
-    val maxContinueAccount = viewModel.maxContinueAccount.observeAsState()
+    val statisticData = viewModel.statisticData.observeAsState()
 
     val index = Config.classList.indexOf(interpret.value)
     Column(modifier = modifier) {
@@ -73,18 +70,25 @@ fun WordDetail(
         Button(
             onClick = { },
         ) {
-            Text(text = "累计打卡:${accumulateAccount.value}天")
+            Text(text = "今日学习:${statisticData.value?.todayLearnAccount}个单词")
+        }
+
+        Button(
+            onClick = { },
+        ) {
+            Text(text = "累计学习:${statisticData.value?.accumulateLearntAccount}个单词")
         }
         Button(
             onClick = { },
         ) {
-            Text(text = "连续打卡:${maxContinueAccount.value}天")
+            Text(text = "累计打卡:${statisticData.value?.accumulateAccount}天")
         }
         Button(
             onClick = { },
         ) {
-            Text(text = "累计学习:${accumulateLearntAccount.value}个单词")
+            Text(text = "最大连续打卡:${statisticData.value?.maxContinueAccount}天")
         }
+
     }
 
 
