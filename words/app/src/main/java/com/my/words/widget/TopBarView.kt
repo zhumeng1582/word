@@ -2,6 +2,7 @@ package com.my.words.widget
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -19,7 +20,7 @@ import androidx.compose.ui.Modifier
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarView(title: String, callback: () -> Unit) {
+fun TopBarView(title: String, actions: @Composable RowScope.() -> Unit = {}, callback: () -> Unit) {
     Column {
         TopAppBar(modifier = Modifier.statusBarsPadding(), title = {
             Text(title)
@@ -29,15 +30,15 @@ fun TopBarView(title: String, callback: () -> Unit) {
             }) {
                 Icon(Icons.Filled.ArrowBack, "")
             }
-        })
+        }, actions = actions)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeTopBarView(title: String,onClick: () -> Unit) {
+fun HomeTopBarView(title: String, onClick: () -> Unit) {
     CenterAlignedTopAppBar(modifier = Modifier.statusBarsPadding(),
-        colors= TopAppBarDefaults.smallTopAppBarColors(),
+        colors = TopAppBarDefaults.smallTopAppBarColors(),
         title = {
             TextButton(onClick = onClick) {
                 Text(title)

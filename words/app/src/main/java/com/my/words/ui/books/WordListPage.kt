@@ -8,7 +8,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -22,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.blankj.utilcode.util.ToastUtils
 import com.my.words.beans.WordBean
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.ui.word.WordViewModel
@@ -43,7 +48,13 @@ fun WordListPage(
             Column(modifier = Modifier.fillMaxWidth()) {
 
                 list.value?.let {
-                    TopBarView(viewModel.getTitle()) {
+                    TopBarView(viewModel.getTitle(),actions = {
+                        IconButton(onClick = {
+                            ToastUtils.showLong("分享")
+                        }) {
+                            Icon(Icons.Filled.Share, null)
+                        }
+                    }) {
                         navController.popBackStack()
                     }
                     WordList(navController, it, viewModel)

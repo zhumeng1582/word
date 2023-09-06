@@ -25,6 +25,9 @@ class WordViewModel : ViewModel() {
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
     private var isPlaying = false
     var type = ""
+    init {
+        timer()
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun setListType(type: String) {
@@ -52,9 +55,7 @@ class WordViewModel : ViewModel() {
                     }
                 }
             }
-
         }
-        timer()
     }
 
 

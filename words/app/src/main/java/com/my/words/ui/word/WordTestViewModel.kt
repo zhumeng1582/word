@@ -9,13 +9,14 @@ import com.my.words.beans.setDone
 class WordTestViewModel : ViewModel() {
     val currentIndex: MutableLiveData<Int> = MutableLiveData(0)
 
+    //-1未选择，-2选择不认识
     val selectId: MutableLiveData<Int> = MutableLiveData(-1)
-    fun setSelectId(data: WordBean, item: WordBean) {
-        if (data.id != item.id) {
+    fun setSelectId(data: WordBean, item: WordBean?) {
+        if (item == null || data.id != item.id) {
             data.setDone(false)
             data.errorCountAdd()
         }
-        selectId.postValue(item.id)
+        selectId.postValue(item?.id ?: -2)
     }
 
     fun testNext(size: Int): Boolean {

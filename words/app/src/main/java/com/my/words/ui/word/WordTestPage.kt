@@ -13,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -69,7 +72,9 @@ fun WordTestPage(
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
-                TopBarView("${viewModel.getTitle()}:${currentIndex + 1}/${beanList.size}") {
+                TopBarView(
+                    "${viewModel.getTitle()}:${currentIndex + 1}/${beanList.size}"
+                ) {
                     navController.popBackStack()
                 }
                 WordView(currentIndex, viewModel, wordTestViewModel) { dateBean ->
@@ -137,6 +142,26 @@ private fun WordView(
                 ThreadUtilsEx.runOnUiThreadDelayed(1000) { onTestClick(dateBean) }
             }
         }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth().padding(top = 30.dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Button(
+                onClick = {
+                    wordTestViewModel.setSelectId(bean, null)
+                    ThreadUtilsEx.runOnUiThreadDelayed(1000) { onTestClick(bean) }
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Purple80,
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 10.dp, vertical = 5.dp)
+                    .height(55.dp)
+                    .align(alignment = Alignment.CenterVertically)
+            ) { Text("In-cognizance", maxLines = 2, overflow = TextOverflow.Ellipsis) }
+        }
     }
 }
 
@@ -150,18 +175,17 @@ private fun SelectItem(
 ) {
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 10.dp),
+            .fillMaxWidth(),
         horizontalArrangement = Arrangement.Center
     ) {
         Button(
             onClick = { onTestClick.invoke(dateBean, itemBean) },
-            //用来设置按钮不同状态下的颜色
             colors = ButtonDefaults.buttonColors(
                 containerColor = getButtonBackgroundColor(selectId, dateBean, itemBean),
             ),
             modifier = Modifier
-                .width(250.dp)
+                .fillMaxWidth()
+                .padding(horizontal = 10.dp, vertical = 5.dp)
                 .height(55.dp)
                 .align(alignment = Alignment.CenterVertically)
         ) { Text(itemBean.interpret, maxLines = 2, overflow = TextOverflow.Ellipsis) }
@@ -177,9 +201,9 @@ fun getButtonBackgroundColor(
         Purple80
     } else {
         if (itemBean.id == dateBean.id) {
-            Color.Green
+            Color(0xFF00BA3D)
         } else if (selectId == itemBean.id) {
-            Color.Red
+            Color(0xFFE55D75)
         } else {
             Purple80
         }
