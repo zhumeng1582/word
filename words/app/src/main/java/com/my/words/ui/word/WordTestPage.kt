@@ -73,7 +73,7 @@ fun WordTestPage(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 TopBarView(
-                    "${viewModel.getTitle()}:${currentIndex + 1}/${beanList.size}"
+                    "${viewModel.getTitleDetail()}:${currentIndex + 1}/${beanList.size}"
                 ) {
                     navController.popBackStack()
                 }

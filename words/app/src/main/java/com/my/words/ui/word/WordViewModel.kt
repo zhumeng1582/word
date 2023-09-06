@@ -87,6 +87,15 @@ class WordViewModel : ViewModel() {
             else -> "学习单词"
         }
     }
+    fun getTitleDetail(): String {
+        return when (type) {
+            "LEARNT" -> "已学习单词"
+            "ERROR" -> "错误单词"
+            "DONE" -> "已完成单词"
+            "ALL" -> "全部单词"
+            else -> "学习单词"
+        }
+    }
 
     fun getLearnWordId(): Int {
         return CacheUtil.getLearnWordId()

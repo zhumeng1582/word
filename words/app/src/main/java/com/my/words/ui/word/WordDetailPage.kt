@@ -178,7 +178,7 @@ fun WordHorizontalPager(
 private fun getTitle(viewModel: WordViewModel, currentIndex: Int, pagerState: PagerState): String {
 
     return if (currentIndex <= pagerState.pageCount - 2) {
-        "${viewModel.getTitle()}:${currentIndex + 1}/${pagerState.pageCount - 1}"
+        "${viewModel.getTitleDetail()}:${currentIndex + 1}/${pagerState.pageCount - 1}"
     } else {
         if (viewModel.isLearnType()) {
             "开始测试"
