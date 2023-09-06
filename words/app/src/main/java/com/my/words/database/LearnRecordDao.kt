@@ -6,6 +6,7 @@ import androidx.room.Query
 import androidx.room.Update
 import com.my.words.beans.LearnRecord
 import com.my.words.beans.WordBean
+import com.my.words.util.TimerUtil
 
 @Dao
 interface LearnRecordDao {
@@ -24,7 +25,16 @@ interface LearnRecordDao {
 
     //学习日期排序
     @Query("select distinct LearnRecord.time from LearnRecord ORDER BY LearnRecord.time")
-    fun accumulateContinueAccount(): List<LearnRecord>
+    fun getAllDayRecord(): List<LearnRecord>
+
+    //学习日期排序
+    @Query("select distinct LearnRecord.time from LearnRecord where LearnRecord.time>= :start and LearnRecord.time<=:end ORDER BY LearnRecord.time")
+    fun getPeriodRecord(start: Long, end: Long): List<LearnRecord>
+
+    fun getMonthRecord(year: Int, month: Int): List<LearnRecord> {
+        val period = TimerUtil.getNextMonth(year,month)
+        return getPeriodRecord(period.first, period.second)
+    }
 
     //累计学习天数
     @Query("SELECT count(distinct LearnRecord.time) from LearnRecord")
@@ -33,9 +43,10 @@ interface LearnRecordDao {
     //累计学习单词数
     @Query("SELECT count(distinct LearnRecord.wordId) from LearnRecord")
     fun accumulateLearnWords(): Int
+
     //累计学习单词数
     @Query("SELECT count(distinct LearnRecord.wordId) from LearnRecord where LearnRecord.time =:time")
-    fun todayLearnWords(time:Long): Int
+    fun todayLearnWords(time: Long): Int
 
     @Query("SELECT count(*) from LearnRecord where LearnRecord.wordId = :wordId and LearnRecord.time = :time")
     fun exit(wordId: Int, time: Long): Long

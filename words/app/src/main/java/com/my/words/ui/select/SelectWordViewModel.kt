@@ -2,7 +2,6 @@ package com.my.words.ui.select
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.blankj.utilcode.util.LogUtils
 import com.my.words.App
 import com.my.words.beans.StatisticData
 import com.my.words.util.CacheUtil
@@ -30,7 +29,7 @@ class SelectWordViewModel : ViewModel() {
                 App.getDb().record().todayLearnWords(TimerUtil.getTodayMills())
 
             val map = HashMap<String, Int>()
-            val list = App.getDb().record().accumulateContinueAccount()
+            val list = App.getDb().record().getAllDayRecord()
 
             list.forEachIndexed { index, learnRecord ->
                 val key = "" + (learnRecord.time - index * TimerUtil.dayMills)
