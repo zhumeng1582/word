@@ -1,10 +1,11 @@
 package com.my.words.ui.main
 
-import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.material.Scaffold
-import androidx.compose.material.rememberScaffoldState
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -25,14 +26,14 @@ import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold() {
     val navController = rememberNavController()
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
-    val scaffoldState = rememberScaffoldState()
     val vm: WordViewModel = viewModel()
+
     Scaffold(
         modifier = Modifier
             .statusBarsPadding()
@@ -45,8 +46,10 @@ fun AppScaffold() {
                 RouteName.PROFILE -> BottomNavBarView(navCtrl = navController)
             }
         }
-    ) {
-        NavHost(navController = navController, startDestination = RouteName.HOME) {
+    ) { paddingValues ->
+        NavHost(navController = navController, startDestination = RouteName.HOME,modifier = Modifier
+            .fillMaxSize()
+            .padding(paddingValues)) {
             composable(RouteName.HOME) { HomePage(navController) }
             composable(RouteName.BOOK) { BooksPage(navController) }
             composable(RouteName.COLLECTION) {

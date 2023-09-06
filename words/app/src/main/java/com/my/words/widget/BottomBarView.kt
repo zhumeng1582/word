@@ -1,13 +1,13 @@
 package com.my.words.widget
 
-import androidx.compose.foundation.background
-import androidx.compose.material.BottomNavigation
-import androidx.compose.material.BottomNavigationItem
-import androidx.compose.material.Icon
-import androidx.compose.material.Text
+import androidx.compose.foundation.Image
+import androidx.compose.material3.Icon
+import androidx.compose.material3.NavigationBar
+import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -23,18 +23,19 @@ fun BottomNavBarView(navCtrl: NavHostController) {
         BottomNavRoute.Collection,
         BottomNavRoute.Profile
     )
-    BottomNavigation {
+    NavigationBar {
         val navBackStackEntry by navCtrl.currentBackStackEntryAsState()
         val currentDestination = navBackStackEntry?.destination
         bottomNavList.forEach { screen ->
-            BottomNavigationItem(
-                modifier = Modifier.background(Color(0xFFF5C278)),
+            NavigationBarItem(
                 icon = {
-                    Icon(
+                    Image(
                         imageVector = screen.icon,
                         contentDescription = null
                     )
                 },
+                alwaysShowLabel = true,
+                colors = NavigationBarItemDefaults.colors(),
                 label = { Text(text = stringResource(screen.stringId)) },
                 selected = currentDestination?.hierarchy?.any { it.route == screen.routeName } == true,
                 onClick = {

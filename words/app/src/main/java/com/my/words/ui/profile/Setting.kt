@@ -37,7 +37,6 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.compose.ui.window.SecureFlagPolicy
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.blankj.utilcode.util.ToastUtils
 import com.my.words.ui.theme.WordsTheme
@@ -96,7 +95,7 @@ fun Setting(
 
             }
             if (openDialog.value) {
-                dialogLearnPlan(openDialog)
+                dialogLearnPlan(openDialog,settingMode)
             }
         }
     }
@@ -105,7 +104,7 @@ fun Setting(
 
 
 @Composable
-fun dialogLearnPlan(state: MutableState<Boolean>, settingMode: SettingMode = viewModel()) {
+fun dialogLearnPlan(state: MutableState<Boolean>, settingMode: SettingMode) {
     var pickerValue by remember { mutableIntStateOf(settingMode.getLearnWordCount()) }
     Dialog(
         onDismissRequest = {
