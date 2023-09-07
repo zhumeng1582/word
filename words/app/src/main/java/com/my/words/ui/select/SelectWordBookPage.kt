@@ -22,9 +22,7 @@ import com.my.words.util.CacheUtil
 import com.my.words.widget.TopBarView
 
 @Composable
-fun SelectWordBookPage(
-    navController: NavHostController,
-) {
+fun SelectWordBookPage(navController: NavHostController) {
 
     WordsTheme {
         Surface(
@@ -45,7 +43,6 @@ fun SelectWordBookPage(
         }
     }
 
-
 }
 
 @Composable
@@ -55,11 +52,10 @@ fun Greeting(
     modifier: Modifier = Modifier,
     viewModel: SelectWordViewModel = viewModel()
 ) {
-    val interpret = viewModel.selectWord.observeAsState()
 
     Row(modifier = modifier) {
         RadioButton(
-            selected = name == interpret.value,
+            selected = name == viewModel.selectWord,
             onClick = {
                 viewModel.setSelectWord(name)
                 navController.previousBackStackEntry?.savedStateHandle?.set(

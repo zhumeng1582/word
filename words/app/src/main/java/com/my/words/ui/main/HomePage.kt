@@ -22,7 +22,7 @@ import com.my.words.widget.HomeTopBarView
 import com.my.words.widget.RouteName
 
 @Composable
-fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = viewModel()) {
+fun HomePage(navController: NavHostController, viewModel: HomeViewMode = viewModel()) {
     navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(CacheUtil.WordBookName)
         ?.observe(navController.currentBackStackEntry!!) { value ->
             viewModel.setSelectWord(value)
