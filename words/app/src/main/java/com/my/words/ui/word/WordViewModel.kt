@@ -27,6 +27,7 @@ class WordViewModel : ViewModel() {
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
     private var isPlaying = false
     var type = ""
+
     init {
         timer()
     }
@@ -35,6 +36,7 @@ class WordViewModel : ViewModel() {
     fun setListType(type: String) {
         this.type = type
         this@WordViewModel.beanList.postValue(arrayListOf())
+
         GlobalScope.launch {
             when (type) {
                 "LEARNT", "ERROR", "DONE", "ALL" -> {
@@ -76,7 +78,7 @@ class WordViewModel : ViewModel() {
         try {
             type.toInt()
             CacheUtil.setLearnWordId(wordId)
-            Log.d(TAG,"------>wordId = "+wordId)
+            Log.d(TAG, "------>wordId = " + wordId)
         } catch (_: NumberFormatException) {
         }
     }
@@ -90,6 +92,7 @@ class WordViewModel : ViewModel() {
             else -> "学习单词"
         }
     }
+
     fun getTitleDetail(): String {
         return when (type) {
             "LEARNT" -> "已学习单词"
@@ -102,6 +105,15 @@ class WordViewModel : ViewModel() {
 
     fun getLearnWordId(): Int {
         return CacheUtil.getLearnWordId()
+    }
+
+    fun getLearnWordIdIndex(): Int {
+        var index = beanList.value?.indexOfFirst { getLearnWordId() == it.id } ?: 0
+        if (index < 0) {
+            index = 0
+        }
+        Log.d(TAG,"------->getLearnWordIdIndex = "+index)
+        return index
     }
 
     private fun getLearnSize(): Int {

@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Divider
@@ -32,6 +34,9 @@ import com.my.words.ui.theme.WordsTheme
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun WordListPage(
@@ -39,7 +44,10 @@ fun WordListPage(
     viewModel: WordViewModel
 ) {
     val list = viewModel.beanList.observeAsState()
-
+    val listState = rememberLazyListState(
+        initialFirstVisibleItemIndex = viewModel.getLearnWordIdIndex(),
+        initialFirstVisibleItemScrollOffset = 0
+    )
     WordsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -47,8 +55,8 @@ fun WordListPage(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
 
-                list.value?.let {
-                    TopBarView(viewModel.getTitle(),actions = {
+                list.value?.let { it1 ->
+                    TopBarView(viewModel.getTitle(), actions = {
                         IconButton(onClick = {
                             ToastUtils.showLong("分享")
                         }) {
@@ -57,7 +65,9 @@ fun WordListPage(
                     }) {
                         navController.popBackStack()
                     }
-                    WordList(navController, it, viewModel)
+                    WordList(it1, listState, viewModel) {
+                        navController.navigate(RouteName.DETAIL_D.format(viewModel.type,it))
+                    }
                 }
             }
 
@@ -67,15 +77,15 @@ fun WordListPage(
 
 @Composable
 fun WordList(
-    navController: NavHostController,
     messages: List<WordBean>,
-    viewModel: WordViewModel
+    listState: LazyListState,
+    viewModel: WordViewModel,
+    onClick: (Int) -> Unit
 ) {
-    LazyColumn {
+    LazyColumn(state = listState) {
         items(messages.size) { index ->
             Box(modifier = Modifier.clickable {
-                navController.navigate(RouteName.DETAIL_S_D.format(viewModel.type, index))
-                // 处理点击事件
+                onClick.invoke(index)
             }) {
                 if (viewModel.getLearnWordId() == messages[index].id) {
                     Text(

@@ -1,6 +1,5 @@
 package com.my.words.ui.word
 
-import androidx.lifecycle.viewmodel.compose.viewModel
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.Image
@@ -64,8 +63,6 @@ fun WordDetailPage(
             WordHorizontalPager(navController, it, wordType, startIndex, viewModel)
         }
     }
-    viewModel.setListType(wordType)
-
 }
 
 @OptIn(ExperimentalPagerApi::class)

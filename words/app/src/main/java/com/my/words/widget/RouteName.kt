@@ -8,8 +8,11 @@ object RouteName {
     const val SETTING = "setting"
     const val SELECT_WORD = "selectWord"
     const val RecordCalendar = "RecordCalendar"
-    const val DETAIL = "detail/{type}/{index}"
-    const val DETAIL_S_D = "detail/%s/%d"
+    const val LEARN_PAGE_TYPE_INDEX = "LearnPage/{type}/{index}"
+    const val LEARN_PAGE = "LearnPage/%s/%d"
+
+    const val DETAIL_INDEX = "detail/{type}/{index}"
+    const val DETAIL_D = "detail/%s/%d"
     const val WordListPage = "wordList/{type}"
     const val WordListPage_S = "wordList/%s"
     const val WORD_TEST = "wordTest/{type}"

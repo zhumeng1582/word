@@ -3,7 +3,6 @@ package com.my.words.ui.main
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -12,7 +11,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.my.words.Config
@@ -47,7 +45,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
                         Modifier.align(alignment = Alignment.CenterHorizontally)
                     ) {
                         val index = Config.classList.indexOf(interpret.value)
-                        navController.navigate(RouteName.DETAIL_S_D.format("$index", 0))
+                        navController.navigate(RouteName.LEARN_PAGE.format("$index", 0))
                     }
                 }
 

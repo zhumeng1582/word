@@ -60,7 +60,20 @@ fun AppScaffold() {
             composable(RouteName.PROFILE) { Profile(navController) }
             composable(RouteName.SETTING) { Setting(navController) }
             composable(RouteName.SELECT_WORD) { SelectWordBookPage(navController) }
-            composable(RouteName.DETAIL) {
+            composable(RouteName.LEARN_PAGE_TYPE_INDEX) {
+                it.arguments?.getString("type")
+                    ?.let { type ->
+                        vm.setListType(type)
+                        WordDetailPage(
+                            navController,
+                            it.arguments?.getString("type") ?: "5",
+                            it.arguments?.getString("index")?.toInt() ?: 0,
+                            viewModel = vm
+                        )
+                    }
+
+            }
+            composable(RouteName.DETAIL_INDEX) {
                 WordDetailPage(
                     navController,
                     it.arguments?.getString("type") ?: "5",
