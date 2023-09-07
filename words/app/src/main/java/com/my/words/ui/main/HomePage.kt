@@ -26,8 +26,9 @@ fun HomePage(navController: NavHostController, viewModel: HomeViewMode = viewMod
     navController.currentBackStackEntry?.savedStateHandle?.getLiveData<String>(CacheUtil.WordBookName)
         ?.observe(navController.currentBackStackEntry!!) { value ->
             viewModel.setSelectWord(value)
+            viewModel.getData()
         }
-    viewModel.getData()
+
     val selectWord = viewModel.selectWord.observeAsState()
     val statisticData = viewModel.statisticData.observeAsState()
     WordsTheme {
