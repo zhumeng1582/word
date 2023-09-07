@@ -26,7 +26,9 @@ fun Profile(navController: NavHostController) {
                 HomeTopBarView("交流电") {
 
                 }
-                Button(onClick = { }) {
+                Button(onClick = {
+                    navController.navigate(RouteName.RecordCalendar)
+                }) {
                     Text(text = "打卡日历")
                 }
                 Button(onClick = { }) {

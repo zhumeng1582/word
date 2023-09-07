@@ -1,9 +1,9 @@
 package com.my.words.ui.main
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -18,6 +18,7 @@ import com.my.words.ui.books.BooksPage
 import com.my.words.ui.books.WordListPage
 import com.my.words.ui.profile.Profile
 import com.my.words.ui.profile.Setting
+import com.my.words.ui.record.PunchCardCalendar
 import com.my.words.ui.select.SelectWordBookPage
 import com.my.words.ui.webview.WebViewPage
 import com.my.words.ui.word.WordDetailPage
@@ -26,6 +27,7 @@ import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppScaffold() {
@@ -72,6 +74,9 @@ fun AppScaffold() {
                     it.arguments?.getString("type") ?: "5",
                     viewModel = vm
                 )
+            }
+            composable(RouteName.RecordCalendar) {
+                PunchCardCalendar()
             }
             composable(RouteName.WordListPage) {
                 it.arguments?.getString("type")

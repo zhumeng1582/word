@@ -7,6 +7,7 @@ object RouteName {
     const val PROFILE = "profile"
     const val SETTING = "setting"
     const val SELECT_WORD = "selectWord"
+    const val RecordCalendar = "RecordCalendar"
     const val DETAIL = "detail/{type}/{index}"
     const val DETAIL_S_D = "detail/%s/%d"
     const val WordListPage = "wordList/{type}"

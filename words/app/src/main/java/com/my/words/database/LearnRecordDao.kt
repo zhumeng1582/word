@@ -28,13 +28,10 @@ interface LearnRecordDao {
     fun getAllDayRecord(): List<LearnRecord>
 
     //学习日期排序
-    @Query("select distinct LearnRecord.time from LearnRecord where LearnRecord.time>= :start and LearnRecord.time<=:end ORDER BY LearnRecord.time")
+    @Query("select  distinct LearnRecord.time from LearnRecord where LearnRecord.time>= :start and LearnRecord.time<=:end ORDER BY LearnRecord.time")
     fun getPeriodRecord(start: Long, end: Long): List<LearnRecord>
 
-    fun getMonthRecord(year: Int, month: Int): List<LearnRecord> {
-        val period = TimerUtil.getNextMonth(year,month)
-        return getPeriodRecord(period.first, period.second)
-    }
+
 
     //累计学习天数
     @Query("SELECT count(distinct LearnRecord.time) from LearnRecord")
