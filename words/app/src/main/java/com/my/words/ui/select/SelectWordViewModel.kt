@@ -3,6 +3,7 @@ package com.my.words.ui.select
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.my.words.App
+import com.my.words.Config
 import com.my.words.beans.StatisticData
 import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
@@ -18,6 +19,9 @@ class SelectWordViewModel : ViewModel() {
         selectWord.postValue(name)
         CacheUtil.setWordBookName(name)
     }
+    fun getWordLevel(): Int {
+        return Config.classList.indexOf(selectWord.value)
+    }
 
     @OptIn(DelicateCoroutinesApi::class)
     fun getData() {
@@ -27,6 +31,8 @@ class SelectWordViewModel : ViewModel() {
             statistic.accumulateLearntAccount = App.getDb().record().accumulateLearnWords()
             statistic.todayLearnAccount =
                 App.getDb().record().todayLearnWords(TimerUtil.getTodayMills())
+            statistic.unlearnedCount =
+                App.getDb().word().unlearnedCount(getWordLevel())
 
             val map = HashMap<String, Int>()
             val list = App.getDb().record().getAllDayRecord()

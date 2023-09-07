@@ -31,8 +31,6 @@ interface LearnRecordDao {
     @Query("select  distinct LearnRecord.time from LearnRecord where LearnRecord.time>= :start and LearnRecord.time<=:end ORDER BY LearnRecord.time")
     fun getPeriodRecord(start: Long, end: Long): List<LearnRecord>
 
-
-
     //累计学习天数
     @Query("SELECT count(distinct LearnRecord.time) from LearnRecord")
     fun accumulateAccount(): Int

@@ -28,7 +28,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
             viewModel.setSelectWord(value)
         }
     viewModel.getData()
-    val interpret = viewModel.selectWord.observeAsState()
+    val selectWord = viewModel.selectWord.observeAsState()
     val statisticData = viewModel.statisticData.observeAsState()
     WordsTheme {
         Surface(
@@ -36,16 +36,16 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
             color = MaterialTheme.colorScheme.background
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
-                HomeTopBarView(interpret.value!!) {
+                HomeTopBarView(selectWord.value!!) {
                     navController.navigate("selectWord")
                 }
                 statisticData.value?.let {
                     WordDetail(
-                        it,
-                        Modifier.align(alignment = Alignment.CenterHorizontally)
+                        it, Modifier.align(alignment = Alignment.CenterHorizontally)
                     ) {
-                        val index = Config.classList.indexOf(interpret.value)
-                        navController.navigate(RouteName.LEARN_PAGE.format("$index", 0))
+                        navController.navigate(
+                            RouteName.LEARN_PAGE.format("${viewModel.getWordLevel()}", 0)
+                        )
                     }
                 }
 
@@ -62,11 +62,26 @@ fun WordDetail(
     onClick: () -> Unit,
 ) {
     Column(modifier = modifier) {
-        Button(
-            onClick = onClick,
-        ) {
-            Text(text = "背单词")
+        if (statisticData.unlearnedCount.toInt() == 0) {
+            Button(
+                onClick = {},
+            ) {
+                Text(text = "恭喜你，已完成")
+            }
+
+        } else {
+            val text = if (statisticData.todayLearnAccount > 0) {
+                "继续学词"
+            } else {
+                "背单词"
+            }
+            Button(
+                onClick = onClick,
+            ) {
+                Text(text = "${text}，剩余${statisticData.unlearnedCount}个单词")
+            }
         }
+
         Button(
             onClick = { },
         ) {

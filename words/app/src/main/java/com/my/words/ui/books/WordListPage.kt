@@ -44,10 +44,7 @@ fun WordListPage(
     viewModel: WordViewModel
 ) {
     val list = viewModel.beanList.observeAsState()
-    val listState = rememberLazyListState(
-        initialFirstVisibleItemIndex = viewModel.getLearnWordIdIndex(),
-        initialFirstVisibleItemScrollOffset = 0
-    )
+
     WordsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -56,6 +53,10 @@ fun WordListPage(
             Column(modifier = Modifier.fillMaxWidth()) {
 
                 list.value?.let { it1 ->
+                    val listState = rememberLazyListState(
+                        initialFirstVisibleItemIndex = viewModel.getLearnWordIdIndex(),
+                        initialFirstVisibleItemScrollOffset = 0
+                    )
                     TopBarView(viewModel.getTitle(), actions = {
                         IconButton(onClick = {
                             ToastUtils.showLong("分享")

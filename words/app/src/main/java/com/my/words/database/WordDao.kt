@@ -19,9 +19,6 @@ interface WordDao {
     @Query("select * from WordBean where level = :level")
     fun query(level: Int): List<WordBean>
 
-    @Query("select * from WordBean where level = :level and isDone = false limit 20")
-    fun queryNotDoneLimit20(level: Int): List<WordBean>
-
     @Query("select * from WordBean where errorCount > 0")
     fun queryAllError(): List<WordBean>
 
@@ -34,6 +31,9 @@ interface WordDao {
         learnId: Int,
         count: Int = CacheUtil.getLearnWordCount()
     ): List<WordBean>
+
+    @Query("select count(*) from  WordBean where WordBean.id>:learnId and WordBean.level = :level")
+    fun unlearnedCount(level: Int, learnId:Int =  CacheUtil.getLearnWordId()): Long
 
     @Query("select * from  WordBean ORDER BY RANDOM() limit 4 ")
     fun queryTestData(): List<WordBean>
