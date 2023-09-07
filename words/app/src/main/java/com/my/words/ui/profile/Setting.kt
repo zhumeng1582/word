@@ -49,11 +49,19 @@ fun Setting(
     navController: NavHostController,
     settingMode: SettingMode = SettingMode(CacheUtil.isDarkTheme(), isSystemInDarkTheme())
 ) {
-    val openDialog = remember { mutableStateOf(false) }
-    val isDarkTheme = settingMode.isDarkTheme.observeAsState()
-    val isSystemInDarkTheme = settingMode.isSystemInDarkTheme.observeAsState()
 
-    WordsTheme(darkTheme = isDarkTheme.value!!) {
+    val isDarkTheme = settingMode.isDarkTheme.observeAsState()
+    isDarkTheme.value?.let {
+        SettingPage(navController, it, settingMode)
+    }
+
+}
+
+@Composable
+fun SettingPage(navController: NavHostController, isDarkTheme: Boolean, settingMode: SettingMode) {
+    val isSystemInDarkTheme = settingMode.isSystemInDarkTheme.observeAsState()
+    val openDialog = remember { mutableStateOf(false) }
+    WordsTheme(darkTheme = isDarkTheme) {
         Surface(
             modifier = Modifier.fillMaxSize(),
             color = MaterialTheme.colorScheme.background
@@ -84,22 +92,21 @@ fun Setting(
                 }
                 Row {
                     Switch(
-                        checked = isDarkTheme.value!!,
+                        checked = isDarkTheme,
                         enabled = !isSystemInDarkTheme.value!!,
                         onCheckedChange = {
                             settingMode.setDarkTheme(it)
                         }
                     )
-                    Text(text = if (isDarkTheme.value == true) "深色模式" else "浅色模式")
+                    Text(text = if (isDarkTheme) "深色模式" else "浅色模式")
                 }
 
             }
             if (openDialog.value) {
-                dialogLearnPlan(openDialog,settingMode)
+                dialogLearnPlan(openDialog, settingMode)
             }
         }
     }
-
 }
 
 
