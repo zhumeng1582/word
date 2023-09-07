@@ -1,5 +1,6 @@
 package com.my.words.ui.word
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.blankj.utilcode.util.ThreadUtils
@@ -20,6 +21,7 @@ import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class WordViewModel : ViewModel() {
+    var TAG = "WordViewModel"
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData(arrayListOf())
     val testData: MutableMap<Int, MutableList<WordBean>> = LinkedHashMap()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
@@ -74,6 +76,7 @@ class WordViewModel : ViewModel() {
         try {
             type.toInt()
             CacheUtil.setLearnWordId(wordId)
+            Log.d(TAG,"------>wordId = "+wordId)
         } catch (_: NumberFormatException) {
         }
     }

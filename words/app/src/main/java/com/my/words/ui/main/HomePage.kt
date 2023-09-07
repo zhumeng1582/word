@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.my.words.Config
+import com.my.words.beans.StatisticData
 import com.my.words.ui.select.SelectWordViewModel
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.CacheUtil
@@ -30,7 +31,7 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
         }
     viewModel.getData()
     val interpret = viewModel.selectWord.observeAsState()
-
+    val statisticData = viewModel.statisticData.observeAsState()
     WordsTheme {
         Surface(
             modifier = Modifier.fillMaxSize(),
@@ -40,11 +41,16 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
                 HomeTopBarView(interpret.value!!) {
                     navController.navigate("selectWord")
                 }
+                statisticData.value?.let {
+                    WordDetail(
+                        it,
+                        Modifier.align(alignment = Alignment.CenterHorizontally)
+                    ) {
+                        val index = Config.classList.indexOf(interpret.value)
+                        navController.navigate(RouteName.DETAIL_S_D.format("$index", 0))
+                    }
+                }
 
-                WordDetail(
-                    navController, Modifier
-                        .align(alignment = Alignment.CenterHorizontally)
-                )
             }
         }
     }
@@ -53,40 +59,36 @@ fun HomePage(navController: NavHostController, viewModel: SelectWordViewModel = 
 
 @Composable
 fun WordDetail(
-    navController: NavHostController,
+    statisticData: StatisticData,
     modifier: Modifier = Modifier,
-    viewModel: SelectWordViewModel = viewModel()
+    onClick: () -> Unit,
 ) {
-    val interpret = viewModel.selectWord.observeAsState()
-    val statisticData = viewModel.statisticData.observeAsState()
-
-    val index = Config.classList.indexOf(interpret.value)
     Column(modifier = modifier) {
         Button(
-            onClick = { navController.navigate(RouteName.DETAIL_S_D.format("$index", 0)) },
+            onClick = onClick,
         ) {
             Text(text = "背单词")
         }
         Button(
             onClick = { },
         ) {
-            Text(text = "今日学习:${statisticData.value?.todayLearnAccount}个单词")
+            Text(text = "今日学习:${statisticData.todayLearnAccount}个单词")
         }
 
         Button(
             onClick = { },
         ) {
-            Text(text = "累计学习:${statisticData.value?.accumulateLearntAccount}个单词")
+            Text(text = "累计学习:${statisticData.accumulateLearntAccount}个单词")
         }
         Button(
             onClick = { },
         ) {
-            Text(text = "累计打卡:${statisticData.value?.accumulateAccount}天")
+            Text(text = "累计打卡:${statisticData.accumulateAccount}天")
         }
         Button(
             onClick = { },
         ) {
-            Text(text = "最大连续打卡:${statisticData.value?.maxContinueAccount}天")
+            Text(text = "最大连续打卡:${statisticData.maxContinueAccount}天")
         }
 
     }
