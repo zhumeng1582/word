@@ -11,6 +11,7 @@ import com.my.words.beans.WordBean
 import com.my.words.database.SQLDatabase
 import com.my.words.util.MMKVManager.Companion.init
 import com.my.words.util.ThreadUtilsEx
+import com.tom_roush.pdfbox.android.PDFBoxResourceLoader
 
 class App : Application() {
     private var proxy: HttpProxyCacheServer? = null
@@ -20,6 +21,8 @@ class App : Application() {
         super.onCreate()
         init(this)
         db = Config.loadData(this)
+        PDFBoxResourceLoader.init(this)
+
     }
 
     private fun newProxy(): HttpProxyCacheServer {

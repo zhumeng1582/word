@@ -59,7 +59,7 @@ fun WordListPage(
                     )
                     TopBarView(viewModel.getTitle(), actions = {
                         IconButton(onClick = {
-                            ToastUtils.showLong("分享")
+                            viewModel.export()
                         }) {
                             Icon(Icons.Filled.Share, null)
                         }

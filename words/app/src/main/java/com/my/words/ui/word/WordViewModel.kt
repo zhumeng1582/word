@@ -3,7 +3,10 @@ package com.my.words.ui.word
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.ThreadUtils
+import com.blankj.utilcode.util.ToastUtils
+import com.blankj.utilcode.util.Utils
 import com.my.words.App
 import com.my.words.Config
 import com.my.words.R
@@ -11,14 +14,22 @@ import com.my.words.beans.LearnRecord
 import com.my.words.beans.WordBean
 import com.my.words.beans.addRecord
 import com.my.words.beans.getAudioUrl
+import com.my.words.beans.getExample
 import com.my.words.ui.PlayAudio
 import com.my.words.ui.PlayListener
 import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
+import com.tom_roush.harmony.awt.AWTColor
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.pdmodel.PDPage
+import com.tom_roush.pdfbox.pdmodel.PDPageContentStream
+import com.tom_roush.pdfbox.pdmodel.font.PDType0Font
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.io.InputStream
 import java.util.concurrent.TimeUnit
+
 
 class WordViewModel : ViewModel() {
     var TAG = "WordViewModel"
@@ -83,6 +94,82 @@ class WordViewModel : ViewModel() {
         }
     }
 
+    fun export() {
+        ThreadUtils.executeByCached(object : ThreadUtils.Task<Int>() {
+            override fun doInBackground(): Int {
+                // 创建PDF文档
+                val pdfPath = "${PathUtils.getExternalAppFilesPath()}/mypdf.pdf"
+                val document = PDDocument()
+                val list = beanList.value!!
+                val count = 6
+                val pageSize = list.size / count + 1
+
+                for (i in 0 until pageSize) {
+                    val blankPage = PDPage()
+                    // 添加内容到页面
+                    val contentStream = PDPageContentStream(
+                        document,
+                        blankPage,
+                        PDPageContentStream.AppendMode.PREPEND,
+                        false
+                    )
+                    val yahe = getFont(document,R.raw.yahe)
+                    val lsansuni = getFont(document,R.raw.lsansuni)
+
+                    contentStream.beginText()
+                    contentStream.newLineAtOffset(80F, 780F)
+                    for (j in 0 until count) {
+                        val index = i * count + j
+                        if (index < list.size) {
+                            val item = list[index]
+                            contentStream.setFont(lsansuni, 14F)
+                            contentStream.setNonStrokingColor(AWTColor.blue)
+                            contentStream.showText("${index + 1}." + item.name+" "+item.phonetic)
+
+                            contentStream.setFont(yahe, 12F)
+                            contentStream.newLineAtOffset(0F, -20F)
+                            contentStream.setNonStrokingColor(AWTColor.black)
+                            contentStream.showText(item.interpret)
+                            contentStream.newLineAtOffset(0F, -20F)
+                            contentStream.setNonStrokingColor(AWTColor.gray)
+                            val lines: List<String> = item.getExample().split("\n")
+                            for (line in lines) {
+                                contentStream.showText(line)
+                                contentStream.newLineAtOffset(0F, -20F)
+                            }
+                            contentStream.newLineAtOffset(0F, -10F)
+                        }
+                    }
+                    contentStream.endText()
+                    // 保存文档并关闭
+                    contentStream.close()
+                    document.addPage(blankPage)
+                }
+
+                document.save(pdfPath)
+                document.close()
+                Log.d(TAG, "-------pdfPath = " + pdfPath)
+                ToastUtils.showLong("保存成功")
+                return 0
+            }
+
+            override fun onCancel() {
+            }
+
+            override fun onFail(t: Throwable?) {
+            }
+
+            override fun onSuccess(result: Int?) {
+            }
+
+        })
+    }
+
+    private fun getFont(document: PDDocument, res: Int): PDType0Font {
+        val fontStream: InputStream = Utils.getApp().resources.openRawResource(res)
+        return PDType0Font.load(document, fontStream)
+    }
+
     fun getTitle(): String {
         return when (type) {
             "LEARNT" -> "已学习单词:${beanList.value?.size}"
@@ -112,7 +199,7 @@ class WordViewModel : ViewModel() {
         if (index < 0) {
             index = 0
         }
-        Log.d(TAG,"------->getLearnWordIdIndex = "+index)
+        Log.d(TAG, "------->getLearnWordIdIndex = " + index)
         return index
     }
 
