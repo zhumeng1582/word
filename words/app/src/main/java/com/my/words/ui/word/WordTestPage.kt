@@ -19,6 +19,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,8 +35,6 @@ import androidx.navigation.NavHostController
 import com.blankj.utilcode.util.ToastUtils
 import com.my.words.R
 import com.my.words.beans.WordBean
-import com.my.words.beans.errorCountAdd
-import com.my.words.beans.setDone
 import com.my.words.ui.theme.Purple80
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.util.ThreadUtilsEx
@@ -48,16 +47,14 @@ import kotlinx.coroutines.launch
 fun WordTestPage(
     navController: NavHostController,
     wordType: String = "5",
-    viewModel: WordViewModel,
-    wordTestViewModel: WordTestViewModel = viewModel()
+    wordTestViewModel: WordTestViewModel
 ) {
-    val beanList = viewModel.beanList.value!!
     val currentIndexState = wordTestViewModel.currentIndex.observeAsState()
     val currentIndex = currentIndexState.value!!
     LaunchedEffect(currentIndex) {
         launch(Dispatchers.IO) {
-            if (currentIndex < beanList.size) {
-                viewModel.playAudio(currentIndex)
+            if (currentIndex < wordTestViewModel.beanList.size) {
+                wordTestViewModel.playAudio(currentIndex)
             }
         }
     }
@@ -69,18 +66,18 @@ fun WordTestPage(
         ) {
             Column(modifier = Modifier.fillMaxSize()) {
                 TopBarView(
-                    "${viewModel.getTitleDetail()}:${currentIndex + 1}/${beanList.size}"
+                    "单词测试:${currentIndex + 1}/${wordTestViewModel.beanList.size}"
                 ) {
                     navController.popBackStack()
                 }
-                WordView(currentIndex, viewModel, wordTestViewModel) { dateBean ->
+                WordView(currentIndex, wordTestViewModel) { dateBean ->
 
-                    if (!wordTestViewModel.testNext(beanList.size)) {
+                    if (!wordTestViewModel.testNext(wordTestViewModel.beanList.size)) {
                         navController.navigate(RouteName.HOME) {
                             popUpTo(RouteName.HOME)
                             launchSingleTop = true
                             ToastUtils.showLong("背诵完成")
-                            viewModel.setLearnId(wordType, dateBean.id)
+                            wordTestViewModel.setLearnId(wordType, dateBean.id)
                         }
                     }
                 }
@@ -94,15 +91,29 @@ fun WordTestPage(
 @Composable
 private fun WordView(
     currentIndex: Int,
-    viewModel: WordViewModel,
     wordTestViewModel: WordTestViewModel,
     onTestClick: (WordBean) -> Unit
 ) {
     val selectId = wordTestViewModel.selectId.observeAsState()
 
-    val playIcon = viewModel.playIcon.observeAsState()
-    val bean = viewModel.beanList.value!![currentIndex]
-    val testData = viewModel.testData[bean.id]!!
+    val playIcon = wordTestViewModel.playIcon.observeAsState()
+    val bean = wordTestViewModel.beanList[currentIndex]
+    val testData = wordTestViewModel.testDataLiveData.observeAsState()
+    testData.value?.get(bean.id)?.let {
+        testItemPage(bean, playIcon, wordTestViewModel, currentIndex, it, selectId, onTestClick)
+    }
+}
+
+@Composable
+private fun testItemPage(
+    bean: WordBean,
+    playIcon: State<Int?>,
+    wordTestViewModel: WordTestViewModel,
+    currentIndex: Int,
+    testList: List<WordBean>,
+    selectId: State<Int?>,
+    onTestClick: (WordBean) -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -126,13 +137,13 @@ private fun WordView(
                 painter = painterResource(id = playIcon.value!!),
                 contentDescription = stringResource(id = R.string.icon_play),
                 modifier = Modifier.clickable {
-                    viewModel.playAudio(currentIndex)
+                    wordTestViewModel.playAudio(currentIndex)
                 }
             )
 
         }
         Spacer(modifier = Modifier.padding(top = 20.dp))
-        testData.forEach {
+        testList.forEach {
             SelectItem(selectId.value!!, bean, it) { dateBean, itemBean ->
                 wordTestViewModel.setSelectId(dateBean, itemBean)
                 ThreadUtilsEx.runOnUiThreadDelayed(1000) { onTestClick(dateBean) }
@@ -140,7 +151,8 @@ private fun WordView(
         }
         Row(
             modifier = Modifier
-                .fillMaxWidth().padding(top = 30.dp),
+                .fillMaxWidth()
+                .padding(top = 30.dp),
             horizontalArrangement = Arrangement.Center
         ) {
             Button(

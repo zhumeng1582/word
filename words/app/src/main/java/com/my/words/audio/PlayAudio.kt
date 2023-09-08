@@ -1,7 +1,10 @@
-package com.my.words.ui
+package com.my.words.audio
 
 import android.media.MediaPlayer
 import android.util.Log
+import com.my.words.App
+import com.my.words.R
+import com.my.words.beans.getAudioUrl
 import java.io.IOException
 
 
@@ -73,6 +76,11 @@ object PlayAudio {
 
     fun release() {
         mediaPlayer.release()
+    }
+    fun playAudio(audioUrl: String,playListener: PlayListener) {
+        val proxy = App.getProxy()
+        val proxyUrl = proxy.getProxyUrl(audioUrl)
+        play(proxyUrl,playListener)
     }
 }
 

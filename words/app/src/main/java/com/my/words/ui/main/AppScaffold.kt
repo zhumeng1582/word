@@ -23,6 +23,7 @@ import com.my.words.ui.select.SelectWordBookPage
 import com.my.words.ui.webview.WebViewPage
 import com.my.words.ui.word.WordDetailPage
 import com.my.words.ui.word.WordTestPage
+import com.my.words.ui.word.WordTestViewModel
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.BottomNavBarView
 import com.my.words.widget.RouteName
@@ -82,11 +83,15 @@ fun AppScaffold() {
                 )
             }
             composable(RouteName.WORD_TEST) {
+                val wordTestViewModel = WordTestViewModel(vm.beanList.value!!)
                 WordTestPage(
                     navController,
                     it.arguments?.getString("type") ?: "5",
-                    viewModel = vm
+                    wordTestViewModel
                 )
+            }
+            composable(RouteName.WORD_BOOK_TEST) {
+
             }
             composable(RouteName.RecordCalendar) {
                 PunchCardCalendar()

@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.my.words.ui.PlayAudio
+import com.my.words.audio.PlayAudio
 import com.my.words.ui.main.AppScaffold
 import com.my.words.ui.theme.WordsTheme
 

@@ -3,7 +3,6 @@ package com.my.words.ui.word
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import androidx.core.content.ContextCompat.startActivity
 import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -20,8 +19,8 @@ import com.my.words.beans.WordBean
 import com.my.words.beans.addRecord
 import com.my.words.beans.getAudioUrl
 import com.my.words.beans.getExample
-import com.my.words.ui.PlayAudio
-import com.my.words.ui.PlayListener
+import com.my.words.audio.PlayAudio
+import com.my.words.audio.PlayListener
 import com.my.words.util.CacheUtil
 import com.my.words.util.TimerUtil
 import com.tom_roush.harmony.awt.AWTColor
@@ -39,7 +38,6 @@ import java.util.concurrent.TimeUnit
 class WordViewModel : ViewModel() {
     var TAG = "WordViewModel"
     val beanList: MutableLiveData<List<WordBean>> = MutableLiveData(arrayListOf())
-    val testData: MutableMap<Int, MutableList<WordBean>> = LinkedHashMap()
     val playIcon: MutableLiveData<Int> = MutableLiveData(R.mipmap.icon_play_1)
     private var isPlaying = false
     var type = ""
@@ -64,15 +62,6 @@ class WordViewModel : ViewModel() {
                         App.getDb().word()
                             .queryAllNotLearn(type.toInt(), CacheUtil.getLearnWordId())
                     )
-                    this@WordViewModel.beanList.value?.forEach { it1 ->
-                        val index = (0..3).random()
-                        val list = App.getDb().word().queryTestData().toMutableList()
-                        list.removeIf { it.id == it1.id }
-
-                        val newList = list.subList(0, 3)
-                        newList.add(index, it1)
-                        testData[it1.id] = newList
-                    }
                 }
             }
         }
@@ -89,15 +78,6 @@ class WordViewModel : ViewModel() {
         }
     }
 
-
-    fun setLearnId(type: String, wordId: Int) {
-        try {
-            type.toInt()
-            CacheUtil.setLearnWordId(wordId)
-            Log.d(TAG, "------>wordId = " + wordId)
-        } catch (_: NumberFormatException) {
-        }
-    }
 
     fun export(context: Context) {
         ThreadUtils.executeByCached(object : ThreadUtils.Task<String>() {
@@ -279,18 +259,19 @@ class WordViewModel : ViewModel() {
     }
 
     fun playAudio(index: Int) {
-        val proxy = App.getProxy()
-        val proxyUrl = proxy.getProxyUrl(beanList.value?.get(index)?.getAudioUrl() ?: "")
-        PlayAudio.play(proxyUrl, object : PlayListener {
-            override fun play() {
-                isPlaying = true
-            }
+        beanList.value?.get(index)?.let {
+            PlayAudio.playAudio(it.getAudioUrl(), object : PlayListener {
+                override fun play() {
+                    isPlaying = true
+                }
 
-            override fun end() {
-                isPlaying = false
-                playIcon.postValue(R.mipmap.icon_play_1)
-            }
+                override fun end() {
+                    isPlaying = false
+                    playIcon.postValue(R.mipmap.icon_play_1)
+                }
 
-        })
+            })
+        }
+
     }
 }
