@@ -89,7 +89,7 @@ class WordViewModel : ViewModel() {
                 val lsansuni = getFont(document,R.raw.lsansuni)
 
                 beanList.value?.let {
-                    val countPerPage = 6
+                    val countPerPage = 5
                     val pageSize = it.size / countPerPage + 1
 
                     for (i in 0 until pageSize) {
@@ -104,7 +104,7 @@ class WordViewModel : ViewModel() {
 
 
                         contentStream.beginText()
-                        contentStream.newLineAtOffset(80F, 780F)
+                        contentStream.newLineAtOffset(80F, 720F)
                         for (j in 0 until countPerPage) {
                             val index = i * countPerPage + j
                             if (index < it.size) {

@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.Button
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
@@ -243,21 +244,24 @@ private fun WordView(
                 )
             )
         )
-        Text(
-            text = bean.getExample(), fontSize = 12.sp,
-            modifier = Modifier
-                .align(alignment = Alignment.Start)
-                .padding(start = 20.dp, end = 20.dp),
-            style = LocalTextStyle.current.merge(
-                TextStyle(
-                    lineHeight = 1.5.em,
-                    lineHeightStyle = LineHeightStyle(
-                        alignment = LineHeightStyle.Alignment.Center,
-                        trim = LineHeightStyle.Trim.None
+        SelectionContainer{
+            Text(
+                text = bean.getExample(), fontSize = 12.sp,
+                modifier = Modifier
+                    .align(alignment = Alignment.Start)
+                    .padding(start = 20.dp, end = 20.dp),
+                style = LocalTextStyle.current.merge(
+                    TextStyle(
+                        lineHeight = 1.5.em,
+                        lineHeightStyle = LineHeightStyle(
+                            alignment = LineHeightStyle.Alignment.Center,
+                            trim = LineHeightStyle.Trim.None
+                        )
                     )
                 )
             )
-        )
+        }
+
         Spacer(modifier = Modifier.weight(1f))
         Row(
             modifier = Modifier

@@ -91,7 +91,12 @@ fun AppScaffold() {
                 )
             }
             composable(RouteName.WORD_BOOK_TEST) {
-
+                val wordTestViewModel = WordTestViewModel(vm.beanList.value!!)
+                WordTestPage(
+                    navController,
+                    it.arguments?.getString("type") ?: "5",
+                    wordTestViewModel
+                )
             }
             composable(RouteName.RecordCalendar) {
                 PunchCardCalendar()
