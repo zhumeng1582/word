@@ -1,8 +1,13 @@
 package com.my.words.ui.word
 
+import android.content.Context
+import android.content.Intent
 import android.util.Log
+import androidx.core.content.ContextCompat.startActivity
+import androidx.core.content.FileProvider
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.blankj.utilcode.util.FileUtils
 import com.blankj.utilcode.util.PathUtils
 import com.blankj.utilcode.util.ThreadUtils
 import com.blankj.utilcode.util.ToastUtils
@@ -94,9 +99,9 @@ class WordViewModel : ViewModel() {
         }
     }
 
-    fun export() {
-        ThreadUtils.executeByCached(object : ThreadUtils.Task<Int>() {
-            override fun doInBackground(): Int {
+    fun export(context: Context) {
+        ThreadUtils.executeByCached(object : ThreadUtils.Task<String>() {
+            override fun doInBackground(): String {
                 // 创建PDF文档
                 val pdfPath = "${PathUtils.getExternalAppFilesPath()}/word.pdf"
                 val document = PDDocument()
@@ -126,7 +131,7 @@ class WordViewModel : ViewModel() {
                                 val item = it[index]
                                 contentStream.setFont(lsansuni, 14F)
                                 contentStream.setNonStrokingColor(AWTColor.blue)
-                                contentStream.showText("${index + 1}." + item.name+" "+item.phonetic)
+                                contentStream.showText("${index + 1}. ${item.name} ${item.phonetic}")
 
                                 contentStream.setFont(yahe, 12F)
                                 contentStream.newLineAtOffset(0F, -20F)
@@ -154,7 +159,7 @@ class WordViewModel : ViewModel() {
                     ToastUtils.showLong("保存成功")
                 }
 
-                return 0
+                return pdfPath
             }
 
             override fun onCancel() {
@@ -163,7 +168,18 @@ class WordViewModel : ViewModel() {
             override fun onFail(t: Throwable?) {
             }
 
-            override fun onSuccess(result: Int?) {
+            override fun onSuccess(result: String?) {
+
+                val file =  FileUtils.getFileByPath(result) // 这里应该是你的 PDF 文件的实际路径
+                val uri = FileProvider.getUriForFile(context, "com.my.words.provider", file)
+                val shareIntent: Intent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_STREAM, uri)
+                    type = "application/pdf"
+                    // 授予临时权限
+                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+                context.startActivity(Intent.createChooser(shareIntent, "Share PDF"))
             }
 
         })

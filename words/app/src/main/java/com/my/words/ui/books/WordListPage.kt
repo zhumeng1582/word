@@ -20,23 +20,16 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.blankj.utilcode.util.ToastUtils
 import com.my.words.beans.WordBean
 import com.my.words.ui.theme.WordsTheme
 import com.my.words.ui.word.WordViewModel
 import com.my.words.widget.RouteName
 import com.my.words.widget.TopBarView
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 @Composable
 fun WordListPage(
@@ -59,7 +52,7 @@ fun WordListPage(
                     )
                     TopBarView(viewModel.getTitle(), actions = {
                         IconButton(onClick = {
-                            viewModel.export()
+                            viewModel.export(context = navController.context)
                         }) {
                             Icon(Icons.Filled.Share, null)
                         }
