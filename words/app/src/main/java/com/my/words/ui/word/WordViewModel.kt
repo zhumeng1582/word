@@ -98,58 +98,62 @@ class WordViewModel : ViewModel() {
         ThreadUtils.executeByCached(object : ThreadUtils.Task<Int>() {
             override fun doInBackground(): Int {
                 // 创建PDF文档
-                val pdfPath = "${PathUtils.getExternalAppFilesPath()}/mypdf.pdf"
+                val pdfPath = "${PathUtils.getExternalAppFilesPath()}/word.pdf"
                 val document = PDDocument()
-                val list = beanList.value!!
-                val count = 6
-                val pageSize = list.size / count + 1
+                val yahe = getFont(document,R.raw.yahe)
+                val lsansuni = getFont(document,R.raw.lsansuni)
 
-                for (i in 0 until pageSize) {
-                    val blankPage = PDPage()
-                    // 添加内容到页面
-                    val contentStream = PDPageContentStream(
-                        document,
-                        blankPage,
-                        PDPageContentStream.AppendMode.PREPEND,
-                        false
-                    )
-                    val yahe = getFont(document,R.raw.yahe)
-                    val lsansuni = getFont(document,R.raw.lsansuni)
+                beanList.value?.let {
+                    val countPerPage = 6
+                    val pageSize = it.size / countPerPage + 1
 
-                    contentStream.beginText()
-                    contentStream.newLineAtOffset(80F, 780F)
-                    for (j in 0 until count) {
-                        val index = i * count + j
-                        if (index < list.size) {
-                            val item = list[index]
-                            contentStream.setFont(lsansuni, 14F)
-                            contentStream.setNonStrokingColor(AWTColor.blue)
-                            contentStream.showText("${index + 1}." + item.name+" "+item.phonetic)
+                    for (i in 0 until pageSize) {
+                        val blankPage = PDPage()
+                        // 添加内容到页面
+                        val contentStream = PDPageContentStream(
+                            document,
+                            blankPage,
+                            PDPageContentStream.AppendMode.PREPEND,
+                            false
+                        )
 
-                            contentStream.setFont(yahe, 12F)
-                            contentStream.newLineAtOffset(0F, -20F)
-                            contentStream.setNonStrokingColor(AWTColor.black)
-                            contentStream.showText(item.interpret)
-                            contentStream.newLineAtOffset(0F, -20F)
-                            contentStream.setNonStrokingColor(AWTColor.gray)
-                            val lines: List<String> = item.getExample().split("\n")
-                            for (line in lines) {
-                                contentStream.showText(line)
+
+                        contentStream.beginText()
+                        contentStream.newLineAtOffset(80F, 780F)
+                        for (j in 0 until countPerPage) {
+                            val index = i * countPerPage + j
+                            if (index < it.size) {
+                                val item = it[index]
+                                contentStream.setFont(lsansuni, 14F)
+                                contentStream.setNonStrokingColor(AWTColor.blue)
+                                contentStream.showText("${index + 1}." + item.name+" "+item.phonetic)
+
+                                contentStream.setFont(yahe, 12F)
                                 contentStream.newLineAtOffset(0F, -20F)
+                                contentStream.setNonStrokingColor(AWTColor.black)
+                                contentStream.showText(item.interpret)
+                                contentStream.newLineAtOffset(0F, -20F)
+                                contentStream.setNonStrokingColor(AWTColor.gray)
+                                val lines: List<String> = item.getExample().split("\n")
+                                for (line in lines) {
+                                    contentStream.showText(line)
+                                    contentStream.newLineAtOffset(0F, -20F)
+                                }
+                                contentStream.newLineAtOffset(0F, -10F)
                             }
-                            contentStream.newLineAtOffset(0F, -10F)
                         }
+                        contentStream.endText()
+                        // 保存文档并关闭
+                        contentStream.close()
+                        document.addPage(blankPage)
                     }
-                    contentStream.endText()
-                    // 保存文档并关闭
-                    contentStream.close()
-                    document.addPage(blankPage)
+
+                    document.save(pdfPath)
+                    document.close()
+                    Log.d(TAG, "-------pdfPath = " + pdfPath)
+                    ToastUtils.showLong("保存成功")
                 }
 
-                document.save(pdfPath)
-                document.close()
-                Log.d(TAG, "-------pdfPath = " + pdfPath)
-                ToastUtils.showLong("保存成功")
                 return 0
             }
 
